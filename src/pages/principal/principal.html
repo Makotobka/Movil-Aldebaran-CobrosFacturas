@@ -6,13 +6,41 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>Principal</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>FACTURAS POR COBRAR</ion-title>
+    </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
+    <ion-searchbar>
 
+    </ion-searchbar>
+
+    <ion-grid class="gridData">
+        <ion-row class="cabezera">
+            <ion-col>
+                CLIENTE
+            </ion-col>
+            <ion-col>
+                TOTAL
+            </ion-col>
+            <ion-col>
+                SALDO
+            </ion-col>
+        </ion-row>
+        <ion-row class="cuerpo" *ngFor="let item of listaClientes" (click)="goDetalleCobro(item)">
+            <ion-col>
+                {{item.CLIENTE}}
+            </ion-col>
+            <ion-col>
+                $ {{item.Total | redondear}}
+            </ion-col>
+            <ion-col>
+                $ {{item.Saldo | redondear}}
+            </ion-col>
+        </ion-row>
+
+    </ion-grid>
 </ion-content>

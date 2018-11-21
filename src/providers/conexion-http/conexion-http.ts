@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, RequestOptions, ResponseContentType, Headers, RequestMethod } from '@angular/http';
-import { dirCone } from '../../app/app.config';
+import { dirServer, uriAPI } from './rutas';
 
 @Injectable()
 export class ConexionHttpProvider {
@@ -29,18 +29,12 @@ export class ConexionHttpProvider {
     return respuesta._body;
   }
 
-  async getCaja(IDSU:number, EST:Boolean){
-    try{
-      if(this.isOnline){
-        let parametros:string;        
-        parametros +=IDSU+"/"+EST;
-        let respuesta = await this.http.get(dirCone).toPromise();
-        return await this.llenarDatosRespons(respuesta);
-      }else{
-        //Modo Fuera de Linea
-        return null;
-      }
+  async getFacturas(){
+    try{      
+        let respuesta = await this.http.get(dirServer+uriAPI.getFacturasCredito).toPromise();
+        return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{
+      console.log("erro http")
       return [];
     }    
   }

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { SqlManagerProvider } from '../../providers/sql-manager/sql-manager';
+import { ConexionHttpProvider } from '../../providers/conexion-http/conexion-http';
+import { PrincipalPage } from '../principal/principal';
 
 /**
  * Generated class for the LoginPage page.
@@ -16,15 +18,25 @@ import { SqlManagerProvider } from '../../providers/sql-manager/sql-manager';
 })
 export class LoginPage {
 
-  constructor(private sqlMan:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
+  constructor(private con:ConexionHttpProvider ,private sqlMan:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
   }
 
   ionViewDidLoad() {
-    //console.log('ionViewDidLoad LoginPage');
     this.sqlMan.abrirConexion().then((res)=>{
-      console.log(res)
+      this.descargarInsertar();      
     })
+  }
 
+  descargarInsertar(){
+    this.con.getFacturas().then(res=>{
+      this.sqlMan.insertarFacturas(res).then((d)=>{
+        this.goPrincipal();
+      });
+    })
+  }
+
+  goPrincipal(){
+    this.navCtrl.setRoot(PrincipalPage);
   }
 
 }
