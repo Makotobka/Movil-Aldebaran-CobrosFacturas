@@ -1,3 +1,4 @@
+import { DetalleFacturaPage } from './../pages/detalle-factura/detalle-factura';
 import { HomePage } from "../pages/home/home";
 import { MyApp } from "./app.component";
 import { LoginPage } from "../pages/login/login";
@@ -9,5 +10,6 @@ export const paginas = [
     HomePage,
     LoginPage,
     PrincipalPage,
-    CobroFacturaPage
+    CobroFacturaPage,
+    DetalleFacturaPage
 ];

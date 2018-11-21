@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { createConnection, ConnectionOptions, getConnectionManager, Connection } from 'ionic-orm';
 import { CtasCobrar } from '../../Estructuras/CtasCobrar';
 import { Facturas } from '../../Estructuras/Facturas';
+import { Alias } from 'ionic-orm/dist/src/query-builder/alias/Alias';
 @Injectable()
 export class SqlManagerProvider {
 
   public conexion:Connection;
   private nameServer:string="default";  // NO TOCAR EL NOMBRE - YA ES POR DEFECTO
-  private nameBD="bdEvinDemostracion_5";
+  private nameBD="bdEvinDemostracion_9";
   public isCone:boolean=false;
 
   constructor() {
@@ -63,8 +64,8 @@ export class SqlManagerProvider {
 
   }
 
-  public async insertarFacturas(data:any){
-    let repFacturas = this.conexion.getRepository(Facturas);
+  public async insertarDatos(Tabla:string,data:any){
+    let repFacturas = this.conexion.getRepository(Tabla);
     return await repFacturas.persist(data);
   }
 
@@ -113,7 +114,7 @@ export class SqlManagerProvider {
 
   public async selectDetalleCobro(ID_Factura){
     let repCtasCobrar = this.conexion.getRepository(CtasCobrar);
-    return await repCtasCobrar.createQueryBuilder("CC").where("CC.ID=:id",{id:ID_Factura}).getResults();
+    return await repCtasCobrar.createQueryBuilder("CC").where("CC.IDFV=:id",{id:ID_Factura}).getResults();
   }
 
 }

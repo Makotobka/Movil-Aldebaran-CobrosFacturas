@@ -28,6 +28,17 @@ export class PrincipalPage {
 
   async agruparDatosFacturas(){
     this.listaClientes = await this.sqlMan.selectGrupCliente();
+    console.log(this.listaClientes);
+    //Ordenacion
+    for (let i = 0; i < this.listaClientes .length; i++) {
+      for (let j = i+1; j < this.listaClientes.length; j++) {
+        if(this.listaClientes[i].Saldo < this.listaClientes[j].Saldo){
+          let temp = this.listaClientes[i];
+          this.listaClientes [i] = this.listaClientes[j];
+          this.listaClientes[j] = temp;
+        }
+      }
+    }
   }
 
   goDetalleCobro(dataRow){

@@ -21,37 +21,31 @@
 
     <ion-grid class="gridData">
         <ion-row class="cabezera">
-            <ion-col col-2>
-                Fecha
-            </ion-col>
-            <ion-col col-2>
-                Numero
+            <ion-col col-3>
+                FECHA
             </ion-col>
             <ion-col col-3>
-                Sucursal
+                NUMERO
             </ion-col>
-            <ion-col col-2 class="numeroResaltado">
+            <ion-col col-3 class="numeroResaltado">
                 TOTAL
             </ion-col>
-            <ion-col col-2 class="numeroResaltado">
+            <ion-col col-3 class="numeroResaltado">
                 SALDO
             </ion-col>
         </ion-row>
-        <ion-row class="cuerpo" *ngFor="let item of listaFactura">
-            <ion-col col-2>
+        <ion-row class="cuerpo" *ngFor="let item of listaFactura" (click)="goDetalleCobro(item)">
+            <ion-col col-3>
                 {{item.Fecha | date: 'mediumDate'}}
             </ion-col>
-            <ion-col col-3>
+            <ion-col col-3 style="font-size: xx-small;">
                 {{item.Numero}}
             </ion-col>
-            <ion-col col-3>
-                {{item.SUCURSAL}}
+            <ion-col class="numeroResaltado" col-3 >
+                $ {{item.Total | redondear}}
             </ion-col>
-            <ion-col col-2 class="numeroResaltado">
-                {{item.Total}}
-            </ion-col>
-            <ion-col col-2 class="numeroResaltado">
-                {{item.Saldo}}
+            <ion-col class="numeroResaltado" col-3 >
+                $ {{item.Saldo | redondear}}
             </ion-col>
         </ion-row>
     </ion-grid>

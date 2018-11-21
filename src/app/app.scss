@@ -13,14 +13,25 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 .gridData {
-    font-size: smaller;
-    margin: 20px;
+    font-size: small;
+    //margin: 20px;
+    padding: 10px;
     .cabezera {
         margin-bottom: 5px;
+        border-bottom: 2px solid black;    
+        font-size: x-small;            
+        .numeroResaltado {         
+            text-align: end;
+        }
     }
-    .cuerpo {}
+
+    .cuerpo {     
+        border-bottom: 2px solid lightgrey;   
+        .numeroResaltado {
+            //font-size: medium;
+            text-align: end;
+            font-weight: bolder;
+        }
+    }
 }
 
-.numeroResaltado {
-    font-size: small;
-}

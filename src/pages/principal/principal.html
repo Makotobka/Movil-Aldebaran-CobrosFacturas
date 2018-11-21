@@ -20,24 +20,24 @@
 
     <ion-grid class="gridData">
         <ion-row class="cabezera">
-            <ion-col>
+            <ion-col col-6>
                 CLIENTE
             </ion-col>
-            <ion-col>
+            <ion-col class="numeroResaltado" col-3>
                 TOTAL
             </ion-col>
-            <ion-col>
+            <ion-col class="numeroResaltado" col-3>
                 SALDO
             </ion-col>
         </ion-row>
         <ion-row class="cuerpo" *ngFor="let item of listaClientes" (click)="goDetalleCobro(item)">
-            <ion-col>
-                {{item.CLIENTE}}
+            <ion-col col-6>
+                {{item.CLIENTE | uppercase}}
             </ion-col>
-            <ion-col>
+            <ion-col class="numeroResaltado" col-3>
                 $ {{item.Total | redondear}}
             </ion-col>
-            <ion-col>
+            <ion-col class="numeroResaltado" col-3>
                 $ {{item.Saldo | redondear}}
             </ion-col>
         </ion-row>

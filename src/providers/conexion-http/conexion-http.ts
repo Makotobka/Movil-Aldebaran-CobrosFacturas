@@ -39,4 +39,14 @@ export class ConexionHttpProvider {
     }    
   }
 
+  async getCtaCobrar(){
+    try{      
+        let respuesta = await this.http.get(dirServer+uriAPI.getCtsPagarFactura).toPromise();
+        return JSON.parse(await this.llenarDatosRespons(respuesta));
+    }catch{
+      console.log("erro http")
+      return [];
+    }    
+  }
+
 }

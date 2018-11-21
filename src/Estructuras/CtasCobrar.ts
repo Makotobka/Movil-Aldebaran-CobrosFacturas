@@ -3,42 +3,45 @@ import { Table,PrimaryColumn, Column } from 'ionic-orm'
 @Table()
 export class CtasCobrar {
 
-  @PrimaryColumn("int", { generated: true })
-  ID_CC: number;
+  @PrimaryColumn()
+  IDCC: number;
 
-  @Column()
+  @Column({nullable:true})
   IDSU: number;
 
-  @Column()
-  IDPtoVta: number;
+  @Column({nullable:true})
+  IDPT: number;
 
-  @Column()
+  @Column({nullable:true})
   IDFV: number;
 
-  @Column()
+  @Column({nullable:true})
   IDUS: number;
 
-  @Column()
+  @Column({nullable:true})
   IDEP: number;
-   
-  @Column()
+
+  @Column({nullable:true})
   Fecha: Date;
-  
-  @Column()
+   
+  @Column({nullable:true})
   Tipo: string;
+  
+  @Column({nullable:true})
+  FormaPago: string;
 
-  @Column()
-  FormaPago : string;
+  @Column({nullable:true})
+  Valor : number;
 
-  @Column()
-  Valor: number;
+  @Column({nullable:true})
+  Saldo: number;
 
-  @Column()
+  @Column({nullable:true})
   PorcentajeComision: number;
 
-  @Column()
+  @Column({nullable:true})
   Comision: number;
 
-  @Column()
-  Estado: string;
+  @Column({nullable:true})
+  Estado: number;
 }

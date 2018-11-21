@@ -28,9 +28,14 @@ export class LoginPage {
   }
 
   descargarInsertar(){
-    this.con.getFacturas().then(res=>{
-      this.sqlMan.insertarFacturas(res).then((d)=>{
-        this.goPrincipal();
+    this.con.getFacturas().then(resFac=>{
+      this.sqlMan.insertarDatos("Facturas",resFac).then(()=>{
+        this.con.getCtaCobrar().then(resCtaCobrar=>{
+          console.log(resCtaCobrar);
+          this.sqlMan.insertarDatos("CtasCobrar",resCtaCobrar).then(()=>{
+            this.goPrincipal();
+          })
+        })
       });
     })
   }
