@@ -7,6 +7,15 @@
 <ion-header>
 
     <ion-navbar>
+        <ion-buttons right>
+            <button ion-button icon-only (click)="logout()">
+                <ion-icon name="exit"></ion-icon>
+            </button>
+            <button ion-button icon-only (click)="goConfiguracion()">
+                <ion-icon name="settings"></ion-icon>
+            </button>
+
+        </ion-buttons>
         <ion-title>FACTURAS POR COBRAR</ion-title>
     </ion-navbar>
 
@@ -30,14 +39,20 @@
                 SALDO
             </ion-col>
         </ion-row>
-        <ion-row class="cuerpo" *ngFor="let item of listaClientes" (click)="goDetalleCobro(item)">
+        <ion-row class="cuerpo" *ngFor="let item of listaFiltro" (click)="goDetalleCobro(item)">
             <ion-col col-6>
                 {{item.CLIENTE | uppercase}}
             </ion-col>
             <ion-col class="numeroResaltado" col-3>
                 $ {{item.Total | redondear}}
             </ion-col>
-            <ion-col class="numeroResaltado" col-3>
+            <ion-col class="numeroResaltado SaldoMaximo" col-3 *ngIf="item.Saldo == item.Total">
+                $ {{item.Saldo | redondear}}
+            </ion-col>
+            <ion-col class="numeroResaltado SaldoNormal" col-3 *ngIf="item.Saldo > 0 && item.Saldo < item.Total">
+                $ {{item.Saldo | redondear}}
+            </ion-col>
+            <ion-col class="numeroResaltado Saldo0" col-3 *ngIf="item.Saldo == 0">
                 $ {{item.Saldo | redondear}}
             </ion-col>
         </ion-row>

@@ -3,21 +3,27 @@ import { createConnection, ConnectionOptions, getConnectionManager, Connection }
 import { CtasCobrar } from '../../Estructuras/CtasCobrar';
 import { Facturas } from '../../Estructuras/Facturas';
 import { Alias } from 'ionic-orm/dist/src/query-builder/alias/Alias';
+import { Usuarios } from '../../Estructuras/Usuarios';
+import { Configuracion } from '../../Estructuras/Configuracion';
 @Injectable()
 export class SqlManagerProvider {
 
   public conexion:Connection;
   private nameServer:string="default";  // NO TOCAR EL NOMBRE - YA ES POR DEFECTO
-  private nameBD="bdEvinDemostracion_9";
+  private nameBD="bdEvinDemostracion_31";
   public isCone:boolean=false;
+  private tablas;
+
 
   constructor() {
   }
 
   private async crearSQLLite(){
-    let tablas = [
+    this.tablas = [
+      Usuarios,
+      Facturas,
       CtasCobrar,
-      Facturas
+      Configuracion
     ]
 
     let conexion:ConnectionOptions = {
@@ -25,7 +31,7 @@ export class SqlManagerProvider {
         type: "websql",
         database: this.nameBD
       },
-      entities: tablas,
+      entities: this.tablas,
       logging: {
         logFailedQueryError: true,
         logQueries: true,
@@ -64,14 +70,20 @@ export class SqlManagerProvider {
 
   }
 
-  public async insertarDatos(Tabla:string,data:any){
+  public async insertarDatos(Tabla:any,data:any){
     let repFacturas = this.conexion.getRepository(Tabla);
     return await repFacturas.persist(data);
   }
 
-  public async selectGrupCliente(){
+  public async selectGrupCliente(estado:boolean){
+    console.log("=> ",estado)
     let repFacturas = this.conexion.getRepository(Facturas);
-    let resData:Facturas[] = await repFacturas.createQueryBuilder("F").getResults();
+    let resData:Facturas[];
+    if(estado){
+      resData = await repFacturas.createQueryBuilder("F").getResults();
+    }else{
+      resData = await repFacturas.createQueryBuilder("F").where("F.Saldo>0").getResults();
+    }    
     let temp=[]
     for (let i = 0; i < resData.length; i++) {
       const element = resData[i];
@@ -115,6 +127,16 @@ export class SqlManagerProvider {
   public async selectDetalleCobro(ID_Factura){
     let repCtasCobrar = this.conexion.getRepository(CtasCobrar);
     return await repCtasCobrar.createQueryBuilder("CC").where("CC.IDFV=:id",{id:ID_Factura}).getResults();
+  }
+
+  public async selectData (Tabla:any,AliasTabla:string, where?:string){
+    if(where===undefined){
+      let repositorio = this.conexion.getRepository(Tabla);
+    return await repositorio.createQueryBuilder(AliasTabla).getResults();
+    }else{
+      let repositorio = this.conexion.getRepository(Tabla);
+      return await repositorio.createQueryBuilder(AliasTabla).where(where).getResults();
+    }
   }
 
 }

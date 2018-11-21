@@ -6,13 +6,77 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>detalle-factura</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>detalle-factura</ion-title>
+    </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
 
+    <ion-grid class="page-empty" *ngIf="ListaCobros.length == 0">
+        <ion-row align-items-center>
+            <ion-col col-12>
+                <h3 text-center>
+                    <ion-icon name="card"></ion-icon>
+                </h3>
+                <h4 text-center>No existen registros de cobro</h4>
+                <h5 text-center>¿Desea añadir un nuevo cobro?</h5>
+                <p text-center>
+                    <button ion-button color="secondary" (click)="anadirCobro()">
+                      Registrar
+                    </button>
+                </p>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <ion-grid class="gridData" *ngIf="ListaCobros.length != 0">
+        <ion-row class="cabezera">
+            <ion-col>
+                Fecha
+            </ion-col>
+            <ion-col>
+                Forma Pago
+            </ion-col>
+            <ion-col class="numeroResaltado">
+                Valor
+            </ion-col>
+            <ion-col class="numeroResaltado">
+                Saldo
+            </ion-col>
+        </ion-row>
+        <ion-row class="cuerpo" *ngFor="let item of ListaCobros">
+            <ion-col>
+                {{item.Fecha | date: 'mediumDate'}}
+            </ion-col>
+            <ion-col>
+                {{item.FormaPago}}
+            </ion-col>
+            <ion-col class="numeroResaltado">
+                $ {{item.Valor | redondear}}
+            </ion-col>
+            <ion-col class="numeroResaltado">
+                $ {{item.Saldo | redondear}}
+            </ion-col>
+        </ion-row>
+
+    </ion-grid>
 </ion-content>
+
+<ion-footer *ngIf="ListaCobros.length != 0">
+    <ion-toolbar color="light">
+        <ion-buttons left>
+            <strong>
+          SALDO&nbsp;:&nbsp;
+          <span>$ {{Factura.Total - sumaCtsCobrar | redondear}}</span>
+        </strong>
+        </ion-buttons>
+        <ion-buttons right>
+            <button ion-button solid color="secondary" (click)="anadirCobro()">
+          Añadir Cobro
+        </button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

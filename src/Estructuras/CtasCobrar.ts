@@ -3,7 +3,7 @@ import { Table,PrimaryColumn, Column } from 'ionic-orm'
 @Table()
 export class CtasCobrar {
 
-  @PrimaryColumn()
+  @PrimaryColumn("int", { generated: true })
   IDCC: number;
 
   @Column({nullable:true})

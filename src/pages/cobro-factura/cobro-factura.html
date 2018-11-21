@@ -7,6 +7,11 @@
 <ion-header>
 
     <ion-navbar>
+        <ion-buttons left>
+            <button ion-button icon-only navPop>
+                <ion-icon name="close"></ion-icon>
+            </button>
+        </ion-buttons>
         <ion-title>cobroFactura</ion-title>
     </ion-navbar>
 
@@ -41,10 +46,10 @@
             <ion-col col-3 style="font-size: xx-small;">
                 {{item.Numero}}
             </ion-col>
-            <ion-col class="numeroResaltado" col-3 >
+            <ion-col class="numeroResaltado" col-3>
                 $ {{item.Total | redondear}}
             </ion-col>
-            <ion-col class="numeroResaltado" col-3 >
+            <ion-col class="numeroResaltado" col-3>
                 $ {{item.Saldo | redondear}}
             </ion-col>
         </ion-row>

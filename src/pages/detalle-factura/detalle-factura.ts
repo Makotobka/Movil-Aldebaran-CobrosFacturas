@@ -2,7 +2,10 @@ import { CtasCobrar } from './../../Estructuras/CtasCobrar';
 import { SqlManagerProvider } from './../../providers/sql-manager/sql-manager';
 import { Facturas } from './../../Estructuras/Facturas';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController} from 'ionic-angular';
+import { ShowProvider } from '../../providers/show/show';
+import { Usuarios } from '../../Estructuras/Usuarios';
+import { IfObservable } from 'rxjs/observable/IfObservable';
 
 /**
  * Generated class for the DetalleFacturaPage page.
@@ -19,16 +22,84 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 export class DetalleFacturaPage {
 
   public Factura:Facturas
-  public ListaCobros:CtasCobrar[];
+  public ListaCobros:CtasCobrar[]=[];
+  public sumaCtsCobrar=0;
+  private isCambio=false;
 
-  constructor(private sqlman:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
+  constructor(private show:ShowProvider,private sqlman:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams,public viewCtrl: ViewController) {
     this.Factura = this.navParams.get("Fact");
-    console.log(this.Factura);
+    
   }
 
-  async ionViewDidLoad() {
+  ionViewDidLoad() {
+    this.refrescarPantalla();    
+  }
+
+  async refrescarPantalla(){
+    //this.ListaCobros = await this.sqlmanselec
     this.ListaCobros = await this.sqlman.selectDetalleCobro(this.Factura.IDFV);
-    console.log(this.ListaCobros);
+      this.sumaCtsCobrar=0;
+    for (let i = 0; i <  this.ListaCobros.length; i++) {
+      const element =  this.ListaCobros[i];      
+      this.sumaCtsCobrar = this.sumaCtsCobrar.valueOf()+element.Valor.valueOf();
+    }
   }
 
+  anadirCobro(){
+    this.show.showAlertInputs("COBRAR",[{
+        text:'Cancelar',
+        handler: data=>{
+          
+        }
+      },{
+        text:'Registrar',
+        handler: data=>{
+          this.guardarCobros(data.Valor);
+        }
+      }
+    ],[
+      {
+        name:'Valor',
+        placeholder:'Valor'
+      }
+    ])
+  }
+
+  async guardarCobros(valor:number){
+    if(valor<=this.Factura.Saldo){
+      let Login = await this.sqlman.selectData("Usuarios","U",'U.isLogin='+true).then((resUsuario:Usuarios[])=>{
+        if(resUsuario.length>0){
+  
+          this.isCambio=true;
+          this.Factura.Saldo = this.Factura.Saldo.valueOf()-valor.valueOf();
+  
+          let registro = {
+            IDSU:this.Factura.IDSU,
+            IDPT:this.Factura.IDPT,
+            IDFV:this.Factura.IDFV,
+            IDUS:resUsuario[0].IDUS,
+            IDEP:null,
+            Fecha:new Date,
+            Tipo:"C",
+            FormaPago:"EFECTIVO",
+            Valor:valor,
+            Saldo:this.Factura.Saldo,
+            PorcentajeComision:0,
+            Comision:0,
+            Estado:true
+          }
+  
+          this.sqlman.insertarDatos("CtasCobrar",registro).then(()=>{
+            this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
+              this.refrescarPantalla();
+            })
+          })
+        }
+      });
+    }
+  }
+
+  regresarDatos(){
+    this.viewCtrl.dismiss({isCambio:this.isCambio});
+  }
 }

@@ -4,6 +4,7 @@ import { MyApp } from "./app.component";
 import { LoginPage } from "../pages/login/login";
 import { PrincipalPage } from "../pages/principal/principal";
 import { CobroFacturaPage } from "../pages/cobro-factura/cobro-factura";
+import { ConfiguracionPage } from '../pages/configuracion/configuracion';
 
 export const paginas = [
     MyApp,
@@ -11,5 +12,6 @@ export const paginas = [
     LoginPage,
     PrincipalPage,
     CobroFacturaPage,
-    DetalleFacturaPage
+    DetalleFacturaPage,
+    ConfiguracionPage
 ];

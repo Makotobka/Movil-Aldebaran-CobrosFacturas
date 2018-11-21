@@ -39,10 +39,21 @@ export class ConexionHttpProvider {
     }    
   }
 
-  async getCtaCobrar(){
+  async getCtaCobrar(IDFV){
     try{      
-        let respuesta = await this.http.get(dirServer+uriAPI.getCtsPagarFactura).toPromise();
-        return JSON.parse(await this.llenarDatosRespons(respuesta));
+      let parametro = IDFV;
+      let respuesta = await this.http.get(dirServer+uriAPI.getCtsPagarFactura+parametro).toPromise();
+      return JSON.parse(await this.llenarDatosRespons(respuesta));
+    }catch{
+      console.log("erro http")
+      return [];
+    }    
+  }
+
+  async getUsuarios(){
+    try{            
+      let respuesta = await this.http.get(dirServer+uriAPI.getusuarios).toPromise();
+      return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{
       console.log("erro http")
       return [];

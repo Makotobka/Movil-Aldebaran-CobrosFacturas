@@ -11,6 +11,8 @@ import { SqlManagerProvider } from '../providers/sql-manager/sql-manager';
 import { paginas } from './app.page';
 import { importaciones } from './app.importaciones';
 import { proveedores } from './app.provedores';
+import { SeguridadProvider } from '../providers/seguridad/seguridad';
+import { ShowProvider } from '../providers/show/show';
 
 @NgModule({
   declarations: [

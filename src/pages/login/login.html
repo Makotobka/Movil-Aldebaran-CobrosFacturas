@@ -6,13 +6,47 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>Login</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-buttons right>
+            <button ion-button icon-only (click)="descargarNecesario()">
+              <ion-icon name="refresh-circle"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>Login</ion-title>
+    </ion-navbar>
 
 </ion-header>
 
+<ion-content class="page-login" padding>
+    <ion-row class="grid-t">
+        <ion-col>
+            <div class="logo">
+                <img class="image" src="assets/icons_stripe.svg" />
+            </div>
+        </ion-col>
+    </ion-row>
+    <form #loginForm="ngForm" class="form" (ngSubmit)="login()">
+        <ion-row class="grid-b">
+            <ion-col col-12>
+                <ion-list>
+                    <ion-item>
+                        <ion-input type="text" placeholder="Usuario" name="usuario" [(ngModel)]="formData.customers_usuario" required></ion-input>
+                    </ion-item>
 
-<ion-content padding>
+                    <ion-item>
+                        <ion-input type="password" placeholder="Password" name="password" [(ngModel)]="formData.customers_password" required></ion-input>
+                    </ion-item>
 
+                </ion-list>
+            </ion-col>
+            <ion-col col-12>
+                <label *ngIf="errorMessage!=''">
+        <span>{{errorMessage}}</span>
+      </label>
+            </ion-col>
+            <ion-col col-12>
+                <button ion-button block color="secondary" type="submit" [disabled]="!loginForm.form.valid">Login'</button>
+            </ion-col>
+        </ion-row>
+    </form>
 </ion-content>

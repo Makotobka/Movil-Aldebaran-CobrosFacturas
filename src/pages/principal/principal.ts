@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { SqlManagerProvider } from '../../providers/sql-manager/sql-manager';
 import { CobroFacturaPage } from '../cobro-factura/cobro-factura';
+import { LoginPage } from '../login/login';
+import { Usuarios } from '../../Estructuras/Usuarios';
+import { ConfiguracionPage } from '../configuracion/configuracion';
 
 /**
  * Generated class for the PrincipalPage page.
@@ -18,24 +21,21 @@ import { CobroFacturaPage } from '../cobro-factura/cobro-factura';
 export class PrincipalPage {
 
   public listaClientes:any[]=[]
+  public listaFiltro:any[]=[]
 
   constructor(private modal:ModalController,private sqlMan:SqlManagerProvider ,public navCtrl: NavController, public navParams: NavParams) {
   }
 
-  ionViewDidLoad() {
-    this.agruparDatosFacturas();
-  }
-
-  async agruparDatosFacturas(){
-    this.listaClientes = await this.sqlMan.selectGrupCliente();
-    console.log(this.listaClientes);
-    //Ordenacion
-    for (let i = 0; i < this.listaClientes .length; i++) {
-      for (let j = i+1; j < this.listaClientes.length; j++) {
-        if(this.listaClientes[i].Saldo < this.listaClientes[j].Saldo){
-          let temp = this.listaClientes[i];
-          this.listaClientes [i] = this.listaClientes[j];
-          this.listaClientes[j] = temp;
+  async ionViewDidLoad() {
+    let isFacCero = await this.sqlMan.selectData("Configuracion","CONF",'CONF.Tipo="VerFacturasCero"');    
+    this.listaClientes = await this.sqlMan.selectGrupCliente(isFacCero[0].Estado);
+    this.listaFiltro = JSON.parse(JSON.stringify(this.listaClientes));
+    for (let i = 0; i < this.listaFiltro .length; i++) {
+      for (let j = i+1; j < this.listaFiltro.length; j++) {
+        if(this.listaFiltro[i].Total < this.listaFiltro[j].Total){
+          let temp = this.listaFiltro[i];
+          this.listaFiltro [i] = this.listaFiltro[j];
+          this.listaFiltro[j] = temp;
         }
       }
     }
@@ -44,6 +44,30 @@ export class PrincipalPage {
   goDetalleCobro(dataRow){
     let ventanaCobro = this.modal.create(CobroFacturaPage,{data:dataRow});
     ventanaCobro.present();
+    ventanaCobro.onDidDismiss(()=>{
+        this.ionViewDidLoad();
+      //}      
+    })
+  }
+
+  logout(){    
+    this.sqlMan.selectData("Usuarios","U",'U.isLogin='+true).then((res)=>{      
+      res[0].isLogin=false;
+      this.sqlMan.insertarDatos("Usuarios",res[0]);
+      this.navCtrl.setRoot(LoginPage);
+    });
+  }
+
+  limpiarDatos(){
+
+  }
+
+  goConfiguracion(){
+    let ventana = this.modal.create(ConfiguracionPage);
+    ventana.present();
+    ventana.onDidDismiss(()=>{
+      this.ionViewDidLoad();
+    })
   }
 
 }

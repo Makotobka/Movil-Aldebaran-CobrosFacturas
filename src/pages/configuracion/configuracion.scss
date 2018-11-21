@@ -1,0 +1,13 @@
+page-configuracion {
+    .listaConfiguracion {
+        .item {
+            .texto {
+                word-wrap: break-word;
+                white-space: normal;
+            }
+            .obj {
+                display: inline-flex;
+            }
+        }
+    }
+}
