@@ -52,12 +52,24 @@ export class ShowProvider {
     alert.present();
   }
 
-  showAlertInputs(titulo:string, botones:any[], inputs:any[]){
-    let alert = this.alertCtrl.create({
-      title: titulo,
-      inputs: inputs,
-      buttons: botones
-    });
+  showAlertInputs(titulo:string, botones:any[], inputs:any[],comentario?:string){
+    let alert;
+
+    if(comentario===undefined){
+      alert = this.alertCtrl.create({      
+        title: titulo,
+        inputs: inputs,
+        buttons: botones
+      });
+    }else{
+      alert = this.alertCtrl.create({      
+        title: titulo,
+        inputs: inputs,
+        buttons: botones,
+        message:comentario
+      });
+    }  
+      
     alert.present();
   }
 

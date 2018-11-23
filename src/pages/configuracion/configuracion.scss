@@ -4,9 +4,11 @@ page-configuracion {
             .texto {
                 word-wrap: break-word;
                 white-space: normal;
+                align-self: center;
             }
             .obj {
                 display: inline-flex;
+                align-self: center;
             }
         }
     }

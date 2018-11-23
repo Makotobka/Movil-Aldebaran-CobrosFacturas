@@ -31,15 +31,8 @@ export class LoginPage {
   }
 
   ionViewDidLoad() {    
-    this.sqlMan.abrirConexion().then(async (res)=>{
-      let conConf = await this.sqlMan.selectData("Configuracion","CONF")
-      console.log("=> ",this.sqlMan.selectData("Facturas","F"));
-      if(conConf.length === 0){
-        this.sqlMan.insertarDatos("Configuracion",this.valorDefecto());
-      }
-
+    this.sqlMan.abrirConexion().then(async (res)=>{      
       let counUser = await this.sqlMan.selectData("Usuarios","U");
-      console.log(counUser.length);
       if(counUser.length === 0){
         this.descargarNecesario();
       }else{
@@ -61,33 +54,39 @@ export class LoginPage {
     }))      
   }
 
-  descargarInsertar(){
-    this.show.detenerTiempo("Descargar Facturas");
-    this.con.getFacturas().then(resFac=>{
-      this.show.changeContentLoading("Guardando Registros de Facturas")
-      this.sqlMan.insertarDatos("Facturas",resFac).then(()=>{     
-        this.sqlMan.selectData("Facturas","F").then((resSelecFac:Facturas[])=>{
-          let IDFV_min=1000000;
-          for (let i = 0; i < resSelecFac.length; i++) {
-            const element = resSelecFac[i];
-            if(IDFV_min.valueOf()>element.IDFV.valueOf())            {
-              IDFV_min = element.IDFV;
+  descargarInsertar(isPrimeraVez:boolean){
+    console.log(isPrimeraVez)
+    if(isPrimeraVez){
+      this.show.detenerTiempo("Descargar Facturas");
+      this.con.getFacturas().then(resFac=>{
+        this.show.changeContentLoading("Guardando Registros de Facturas")
+        this.sqlMan.insertarDatos("Facturas",resFac).then(()=>{     
+          this.sqlMan.selectData("Facturas","F").then((resSelecFac:Facturas[])=>{
+            let IDFV_min=1000000;
+            for (let i = 0; i < resSelecFac.length; i++) {
+              const element = resSelecFac[i];
+              if(IDFV_min.valueOf()>element.IDFV.valueOf())            {
+                IDFV_min = element.IDFV;
+              }
             }
-          }
-          this.show.changeContentLoading("Descargando Cuentas por Cobrar")
-          this.con.getCtaCobrar(IDFV_min).then(resCtaCobrar=>{
-            this.show.changeContentLoading("Guardando Registros de Cuentas por Cobrar")
-            this.sqlMan.insertarDatos("CtasCobrar",resCtaCobrar).then(()=>{              
-              this.show.continuarTiempo();
-              this.goPrincipal();
-            })
-          })          
-        })  
-      });
-    })
+            this.show.changeContentLoading("Descargando Cuentas por Cobrar")
+            this.con.getCtaCobrar(IDFV_min).then(resCtaCobrar=>{
+              this.show.changeContentLoading("Guardando Registros de Cuentas por Cobrar")
+              this.sqlMan.insertarDatos("CtasCobrar",resCtaCobrar).then(()=>{              
+                this.show.continuarTiempo();
+                this.goPrincipal();
+              })
+            })          
+          })  
+        });
+      })
+    }else{
+      this.goPrincipal();
+    }
+   
   }
 
-  goPrincipal(){
+  goPrincipal(){    
     this.navCtrl.setRoot(PrincipalPage);
   }
 
@@ -101,8 +100,8 @@ export class LoginPage {
         if(temp === dataUser[0].Clave){
           dataUser[0].isLogin=true;
           //console.log("Entro")
-          this.sqlMan.insertarDatos("Usuarios",dataUser).then(()=>{
-            this.descargarInsertar();            
+          this.sqlMan.insertarDatos("Usuarios",dataUser).then(async ()=>{
+            this.descargarInsertar(await this.valorDefecto());            
           });         
         }else{
           this.errorMessage='Contraseña Incorrecta'
@@ -112,15 +111,29 @@ export class LoginPage {
     
   }
 
-  valorDefecto(){
-    return [
-      {
-        Tipo:"VerFacturasCero",
-        Estado:false,
-        Valor:0,
-        Objeto:null
-      }
-    ]
+  async valorDefecto(){
+    let conConf = await this.sqlMan.selectData("Configuracion","CONF")
+    if(conConf.length === 0){
+      this.sqlMan.insertarDatos("Configuracion",
+      [
+        {
+          Tipo:"VerFacturasCero",
+          Estado:false,
+          Valor:0,
+          Objeto:null
+        },
+        {
+          Tipo:"isPrimeraVez",
+          Estado:false,
+          Valor:0,
+          Objeto:null
+        }
+      ]
+      );      
+      return true;
+    }else{
+      return false;
+    }
   }
 
 }

@@ -7,20 +7,25 @@
 <ion-header>
 
     <ion-navbar>
-        <ion-title>Configuracion</ion-title>
+        <ion-title text-center>CONFIGURACIONES</ion-title>
+        <ion-buttons left>
+            <button ion-button icon-only navPop>
+                <ion-icon name="arrow-back"></ion-icon>
+            </button>
+        </ion-buttons>
     </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
 
     <ion-grid class="listaConfiguracion">
         <ion-row class="item">
-            <ion-col col-10 class="texto">
+            <ion-col col-9 class="texto">
                 Habilitar Vista de Facturas con Saldo 0
             </ion-col>
-            <ion-col col-2 right class="obj">
+            <ion-col col-3 right class="obj">
                 <ion-toggle color="secondary" [(ngModel)]="isHabiFac.Estado"></ion-toggle>
             </ion-col>
         </ion-row>

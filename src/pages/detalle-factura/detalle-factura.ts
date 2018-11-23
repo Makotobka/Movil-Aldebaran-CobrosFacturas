@@ -28,14 +28,9 @@ export class DetalleFacturaPage {
 
   constructor(private show:ShowProvider,private sqlman:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams,public viewCtrl: ViewController) {
     this.Factura = this.navParams.get("Fact");
-    
   }
 
-  ionViewDidLoad() {
-    this.refrescarPantalla();    
-  }
-
-  async refrescarPantalla(){
+  async ionViewDidLoad() {
     //this.ListaCobros = await this.sqlmanselec
     this.ListaCobros = await this.sqlman.selectDetalleCobro(this.Factura.IDFV);
       this.sumaCtsCobrar=0;
@@ -46,7 +41,7 @@ export class DetalleFacturaPage {
   }
 
   anadirCobro(){
-    this.show.showAlertInputs("COBRAR",[{
+    this.show.showAlertInputs("Añadir Cobro",[{
         text:'Cancelar',
         handler: data=>{
           
@@ -57,16 +52,17 @@ export class DetalleFacturaPage {
           this.guardarCobros(data.Valor);
         }
       }
-    ],[
-      {
-        name:'Valor',
-        placeholder:'Valor'
-      }
-    ])
+     ],[
+        {
+          name:'Valor',
+          placeholder:'Valor',
+          type: 'number'
+        }
+      ],"Cliente: "+this.Factura.CLIENTE+"\nRegistre el monto a pagar");
   }
 
   async guardarCobros(valor:number){
-    if(valor<=this.Factura.Saldo){
+    if(valor<=this.Factura.Saldo && (this.Factura.Saldo-valor)>=0 && valor>0 ){
       let Login = await this.sqlman.selectData("Usuarios","U",'U.isLogin='+true).then((resUsuario:Usuarios[])=>{
         if(resUsuario.length>0){
   
@@ -91,15 +87,77 @@ export class DetalleFacturaPage {
   
           this.sqlman.insertarDatos("CtasCobrar",registro).then(()=>{
             this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
-              this.refrescarPantalla();
+              this.ionViewDidLoad();
             })
           })
         }
       });
+    }else{
+      console.log("Error al registar el monto")
+      this.show.showToast("Error al registar el monto")
     }
+
   }
 
   regresarDatos(){
-    this.viewCtrl.dismiss({isCambio:this.isCambio});
+    //this.viewCtrl.dismiss({isCambio:this.isCambio});
+  }
+
+  editarRegistro(fila:CtasCobrar){
+    this.show.showAlertInputs("Editar Cobro",
+      [ 
+        {
+          text:'Cancelar'
+        },   
+        {
+          text:'Eliminar',
+          handler: data=>{
+            this.eliminarCobro(fila);
+          }
+        },{
+          text:'Editar',
+          handler: data=>{            
+            this.editarCobro(fila,data.Valor);
+          }
+        }
+      ],
+      [
+        {
+          name:'Valor',
+          placeholder:'Valor',
+          type: 'number'
+        }
+      ],
+      "Registre el NUEVO monto a pagar"
+    );
+  }
+
+  eliminarCobro(cta:CtasCobrar){
+    this.Factura.Saldo = this.Factura.Saldo.valueOf()+cta.Valor.valueOf();
+    this.sqlman.eliminarData("CtasCobrar",cta).then((res)=>{
+      console.log("Eliminado ",res);
+      this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
+        console.log("Editado Completo");
+        this.ionViewDidLoad();
+      })
+    })
+  }
+
+  editarCobro(cta:CtasCobrar,valor:number){
+    //30 y 20 = 10
+    let res:number = valor.valueOf() - cta.Valor.valueOf();   
+    if(res>=0){
+      this.Factura.Saldo = this.Factura.Saldo.valueOf()-res.valueOf();
+    }else{
+      this.Factura.Saldo = this.Factura.Saldo.valueOf()+(res.valueOf()*-1);
+    }
+    cta.Saldo = this.Factura.Saldo;
+    cta.Valor = valor;
+    this.sqlman.insertarDatos("CtasCobrar",cta).then(()=>{
+      this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
+        console.log("Editado Completo");
+        this.ionViewDidLoad();
+      })
+    })
   }
 }

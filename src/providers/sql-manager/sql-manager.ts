@@ -139,4 +139,9 @@ export class SqlManagerProvider {
     }
   }
 
+  public async eliminarData(Tabla:any,registro:any){
+    let repositorio = this.conexion.getRepository(Tabla);
+    return await repositorio.remove(registro)   
+  }
+
 }

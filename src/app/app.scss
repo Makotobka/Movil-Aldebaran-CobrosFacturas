@@ -1,19 +1,23 @@
-.gridData {
-    font-size: small;
-    //margin: 20px;
-    padding: 10px;
+.gridData {    
+    padding: 20px !important;    
+    font-size: small;    
     .cabezera {
         margin-bottom: 5px;
         border-bottom: 2px solid black;
-        font-size: x-small;
+        //font-size: medium;
         .numeroResaltado {
             text-align: end;
         }
+        .col{
+            align-self: center;
+        }
+
     }
     .cuerpo {
         border-bottom: 2px solid lightgrey;
         margin-bottom: 2px;
-        margin-top: 2px;
+        margin-top: 2px; 
+        
         .numeroResaltado {
             //font-size: medium;
             text-align: end;

@@ -20,15 +20,23 @@ import { ConfiguracionPage } from '../configuracion/configuracion';
 })
 export class PrincipalPage {
 
-  public listaClientes:any[]=[]
-  public listaFiltro:any[]=[]
+  public listaClientes:any[]=[];
+  public listaFiltro:any[]=[];
+  public FraseFiltro:string;
 
   constructor(private modal:ModalController,private sqlMan:SqlManagerProvider ,public navCtrl: NavController, public navParams: NavParams) {
+    
   }
 
   async ionViewDidLoad() {
     let isFacCero = await this.sqlMan.selectData("Configuracion","CONF",'CONF.Tipo="VerFacturasCero"');    
     this.listaClientes = await this.sqlMan.selectGrupCliente(isFacCero[0].Estado);
+    if(this.FraseFiltro!=="" && this.FraseFiltro!==undefined){
+      let val = this.FraseFiltro
+      this.listaClientes = this.listaClientes.filter(function(item) {
+        return item.CLIENTE.toLowerCase().includes(val.toLowerCase());
+      });
+    }
     this.listaFiltro = JSON.parse(JSON.stringify(this.listaClientes));
     for (let i = 0; i < this.listaFiltro .length; i++) {
       for (let j = i+1; j < this.listaFiltro.length; j++) {
@@ -39,14 +47,15 @@ export class PrincipalPage {
         }
       }
     }
+    
   }
 
   goDetalleCobro(dataRow){
     let ventanaCobro = this.modal.create(CobroFacturaPage,{data:dataRow});
     ventanaCobro.present();
     ventanaCobro.onDidDismiss(()=>{
-        this.ionViewDidLoad();
-      //}      
+      this.FraseFiltro=undefined;
+      this.ionViewDidLoad();
     })
   }
 
@@ -58,16 +67,16 @@ export class PrincipalPage {
     });
   }
 
-  limpiarDatos(){
-
-  }
-
   goConfiguracion(){
     let ventana = this.modal.create(ConfiguracionPage);
     ventana.present();
     ventana.onDidDismiss(()=>{
+      this.FraseFiltro=undefined;
       this.ionViewDidLoad();
     })
   }
 
+  onInput(event){
+    this.ionViewDidLoad();
+  }
 }

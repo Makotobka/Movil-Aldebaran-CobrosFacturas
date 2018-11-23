@@ -7,13 +7,18 @@
 <ion-header>
 
     <ion-navbar>
-        <ion-title>detalle-factura</ion-title>
+        <ion-title text-center>HISTORIAL DE PAGO</ion-title>
+        <ion-buttons left>
+            <button ion-button icon-only navPop>
+                <ion-icon name="arrow-back"></ion-icon>
+            </button>
+        </ion-buttons>
     </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
 
     <ion-grid class="page-empty" *ngIf="ListaCobros.length == 0">
         <ion-row align-items-center>
@@ -34,30 +39,30 @@
 
     <ion-grid class="gridData" *ngIf="ListaCobros.length != 0">
         <ion-row class="cabezera">
-            <ion-col>
+            <ion-col col-3>
                 Fecha
             </ion-col>
-            <ion-col>
+            <ion-col col-3>
                 Forma Pago
             </ion-col>
-            <ion-col class="numeroResaltado">
+            <ion-col class="numeroResaltado" col-3>
                 Valor
             </ion-col>
-            <ion-col class="numeroResaltado">
+            <ion-col class="numeroResaltado" col-3>
                 Saldo
             </ion-col>
         </ion-row>
-        <ion-row class="cuerpo" *ngFor="let item of ListaCobros">
-            <ion-col>
+        <ion-row class="cuerpo" *ngFor="let item of ListaCobros" (click)="editarRegistro(item)">
+            <ion-col col-3>
                 {{item.Fecha | date: 'mediumDate'}}
             </ion-col>
-            <ion-col>
+            <ion-col col-3>
                 {{item.FormaPago}}
             </ion-col>
-            <ion-col class="numeroResaltado">
+            <ion-col class="numeroResaltado" col-3>
                 $ {{item.Valor | redondear}}
             </ion-col>
-            <ion-col class="numeroResaltado">
+            <ion-col class="numeroResaltado" col-3>
                 $ {{item.Saldo | redondear}}
             </ion-col>
         </ion-row>
@@ -74,9 +79,12 @@
         </strong>
         </ion-buttons>
         <ion-buttons right>
-            <button ion-button solid color="secondary" (click)="anadirCobro()">
-          Añadir Cobro
-        </button>
+            <button ion-button solid color="secondary" (click)="anadirCobro()" *ngIf="Factura.Total - sumaCtsCobrar!=0" >
+                Añadir Cobro
+            </button>
+            <button ion-button navPop solid color="secondary" *ngIf="Factura.Total - sumaCtsCobrar==0">
+                Regresar
+            </button>
         </ion-buttons>
     </ion-toolbar>
 </ion-footer>
