@@ -46,8 +46,7 @@ export class PrincipalPage {
           this.listaFiltro[j] = temp;
         }
       }
-    }
-    
+    }    
   }
 
   goDetalleCobro(dataRow){

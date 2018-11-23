@@ -52,7 +52,7 @@
                 Saldo
             </ion-col>
         </ion-row>
-        <ion-row class="cuerpo" *ngFor="let item of ListaCobros" (click)="editarRegistro(item)">
+        <ion-row class="cuerpo" *ngFor="let item of ListaCobros" (click)="editarRegistro(item)" [ngClass]="{habilitado: item.saveMovil, desabilitado:!item.saveMovil}">
             <ion-col col-3>
                 {{item.Fecha | date: 'mediumDate'}}
             </ion-col>
@@ -79,7 +79,7 @@
         </strong>
         </ion-buttons>
         <ion-buttons right>
-            <button ion-button solid color="secondary" (click)="anadirCobro()" *ngIf="Factura.Total - sumaCtsCobrar!=0" >
+            <button ion-button solid color="secondary" (click)="anadirCobro()" *ngIf="Factura.Total - sumaCtsCobrar!=0">
                 Añadir Cobro
             </button>
             <button ion-button navPop solid color="secondary" *ngIf="Factura.Total - sumaCtsCobrar==0">

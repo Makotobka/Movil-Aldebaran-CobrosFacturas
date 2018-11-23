@@ -60,4 +60,15 @@ export class ConexionHttpProvider {
     }    
   }
 
+  async setCtsCobrar(data:any){
+    try{           
+      console.log(dirServer+uriAPI.setCtasAll) 
+      let respuesta = await this.http.post(dirServer+uriAPI.setCtasAll,data).toPromise();
+      return JSON.parse(await this.llenarDatosRespons(respuesta));
+    }catch{
+      console.log("erro http")
+      return [];
+    }    
+  }
+
 }

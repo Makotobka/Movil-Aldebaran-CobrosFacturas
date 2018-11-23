@@ -82,7 +82,8 @@ export class DetalleFacturaPage {
             Saldo:this.Factura.Saldo,
             PorcentajeComision:0,
             Comision:0,
-            Estado:true
+            Estado:true,
+            saveMovil:true
           }
   
           this.sqlman.insertarDatos("CtasCobrar",registro).then(()=>{
@@ -99,65 +100,71 @@ export class DetalleFacturaPage {
 
   }
 
-  regresarDatos(){
-    //this.viewCtrl.dismiss({isCambio:this.isCambio});
-  }
-
   editarRegistro(fila:CtasCobrar){
-    this.show.showAlertInputs("Editar Cobro",
-      [ 
-        {
-          text:'Cancelar'
-        },   
-        {
-          text:'Eliminar',
-          handler: data=>{
-            this.eliminarCobro(fila);
+    if(fila.saveMovil){
+      this.show.showAlertInputs("Editar Cobro",
+        [ 
+          {
+            text:'Cancelar'
+          },   
+          {
+            text:'Eliminar',
+            handler: data=>{
+              this.eliminarCobro(fila);
+            }
+          },{
+            text:'Editar',
+            handler: data=>{            
+              this.editarCobro(fila,data.Valor);
+            }
           }
-        },{
-          text:'Editar',
-          handler: data=>{            
-            this.editarCobro(fila,data.Valor);
+        ],
+        [
+          {
+            name:'Valor',
+            placeholder:'Valor',
+            type: 'number'
           }
-        }
-      ],
-      [
-        {
-          name:'Valor',
-          placeholder:'Valor',
-          type: 'number'
-        }
-      ],
-      "Registre el NUEVO monto a pagar"
-    );
+        ],
+        "Registre el NUEVO monto a pagar"
+      );
+    }
+    
   }
 
   eliminarCobro(cta:CtasCobrar){
-    this.Factura.Saldo = this.Factura.Saldo.valueOf()+cta.Valor.valueOf();
-    this.sqlman.eliminarData("CtasCobrar",cta).then((res)=>{
-      console.log("Eliminado ",res);
-      this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
-        console.log("Editado Completo");
-        this.ionViewDidLoad();
+    if(cta.saveMovil){
+      this.Factura.Saldo = this.Factura.Saldo.valueOf()+cta.Valor.valueOf();
+      this.sqlman.eliminarData("CtasCobrar",cta).then((res)=>{
+        console.log("Eliminado ",res);
+        this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
+          console.log("Editado Completo");
+          this.ionViewDidLoad();
+        })
       })
-    })
+    }
   }
 
   editarCobro(cta:CtasCobrar,valor:number){
-    //30 y 20 = 10
-    let res:number = valor.valueOf() - cta.Valor.valueOf();   
-    if(res>=0){
-      this.Factura.Saldo = this.Factura.Saldo.valueOf()-res.valueOf();
-    }else{
-      this.Factura.Saldo = this.Factura.Saldo.valueOf()+(res.valueOf()*-1);
+    if(cta.saveMovil){
+      if(valor<=this.Factura.Saldo && (this.Factura.Saldo-valor)>=0 && valor>0 ){
+        let res:number = valor.valueOf() - cta.Valor.valueOf();   
+        if(res>=0){
+          this.Factura.Saldo = this.Factura.Saldo.valueOf()-res.valueOf();
+        }else{
+          this.Factura.Saldo = this.Factura.Saldo.valueOf()+(res.valueOf()*-1);
+        }
+        cta.Saldo = this.Factura.Saldo;
+        cta.Valor = valor;
+        this.sqlman.insertarDatos("CtasCobrar",cta).then(()=>{
+          this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
+            console.log("Editado Completo");
+            this.ionViewDidLoad();
+          })
+        })
+      }else{
+        this.show.showToast("Error al registar el monto")
+      }
     }
-    cta.Saldo = this.Factura.Saldo;
-    cta.Valor = valor;
-    this.sqlman.insertarDatos("CtasCobrar",cta).then(()=>{
-      this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
-        console.log("Editado Completo");
-        this.ionViewDidLoad();
-      })
-    })
   }
 }

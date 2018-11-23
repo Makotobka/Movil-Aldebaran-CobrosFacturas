@@ -25,8 +25,18 @@
             <ion-col col-9 class="texto">
                 Habilitar Vista de Facturas con Saldo 0
             </ion-col>
-            <ion-col col-3 right class="obj">
-                <ion-toggle color="secondary" [(ngModel)]="isHabiFac.Estado"></ion-toggle>
+            <ion-col col-3 class="obj">
+                <ion-toggle [(ngModel)]="isHabiFac.Estado"></ion-toggle>
+            </ion-col>
+        </ion-row>
+        <ion-row class="item">
+            <ion-col col-9 class="texto">
+                Sincronizar con el servidor
+            </ion-col>
+            <ion-col col-3 class="obj">
+                <button ion-button full icon-only (click)="subirInformacion()">
+                    <ion-icon name="arrow-back"></ion-icon>
+                </button>
             </ion-col>
         </ion-row>
     </ion-grid>

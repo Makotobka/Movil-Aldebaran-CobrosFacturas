@@ -44,4 +44,7 @@ export class CtasCobrar {
 
   @Column({nullable:true})
   Estado: number;
+
+  @Column({nullable:true,default:false})
+  saveMovil: boolean;
 }

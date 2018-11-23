@@ -6,8 +6,8 @@
 -->
 <ion-header>
 
-    <ion-navbar>       
-        <ion-title text-center>CUENTAS POR COBRAR</ion-title> 
+    <ion-navbar>
+        <ion-title text-center>CUENTAS POR COBRAR</ion-title>
         <ion-buttons right>
             <button ion-button icon-only (click)="logout()">
                 <ion-icon name="log-out"></ion-icon>
@@ -15,12 +15,12 @@
             <button ion-button icon-only (click)="goConfiguracion()">
                 <ion-icon name="settings"></ion-icon>
             </button>
-        </ion-buttons>       
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
 
 
-<ion-content>    
+<ion-content>
 
     <ion-grid class="gridData" *ngIf="listaFiltro.length!=0">
         <ion-row class="cabezera">
@@ -41,13 +41,7 @@
             <ion-col class="numeroResaltado" col-3>
                 $ {{item.Total | redondear}}
             </ion-col>
-            <ion-col class="numeroResaltado SaldoMaximo" col-3 *ngIf="item.Saldo == item.Total">
-                $ {{item.Saldo | redondear}}
-            </ion-col>
-            <ion-col class="numeroResaltado SaldoNormal" col-3 *ngIf="item.Saldo > 0 && item.Saldo < item.Total">
-                $ {{item.Saldo | redondear}}
-            </ion-col>
-            <ion-col class="numeroResaltado Saldo0" col-3 *ngIf="item.Saldo == 0">
+            <ion-col class="numeroResaltado SaldoMaximo" col-3 [ngClass]="{SaldoMaximo: item.Saldo == item.Total, SaldoNormal: (item.Saldo > 0 && item.Saldo < item.Total), Saldo0:item.Saldo == 0}">
                 $ {{item.Saldo | redondear}}
             </ion-col>
         </ion-row>
@@ -73,4 +67,3 @@
         <ion-searchbar [(ngModel)]="FraseFiltro" (ionInput)="onInput($event)"></ion-searchbar>
     </ion-toolbar>
 </ion-footer>
-  
