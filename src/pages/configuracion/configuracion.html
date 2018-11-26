@@ -20,29 +20,33 @@
 
 <ion-content>
 
-    <ion-list class="listaItem">     
-        
+    <ion-list class="listaItem">
+
         <ion-list-header>
             Servidor
         </ion-list-header>
         <ion-item>
-
+            <ion-label color="primary" stacked>Direccion IP: </ion-label>
+            <ion-input placeholder="192.168.0.2" [(ngModel)]="IP"></ion-input>
         </ion-item>
-
+        <ion-item>
+            <ion-label color="primary" stacked>Puerto: </ion-label>
+            <ion-input type="number" placeholder="12345" [(ngModel)]="Puerto"></ion-input>
+        </ion-item>
 
         <ion-list-header>
             Sincronizacion
         </ion-list-header>
         <ion-item>
-            <ion-label>Fecha de la ultima sincronizacion</ion-label>           
+            <ion-label>Fecha de la ultima sincronizacion</ion-label>
             <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="fechaSincro.Objeto"></ion-datetime>
         </ion-item>
         <ion-item>
-            <ion-label>Hora de la ultima sincronizacion</ion-label>           
+            <ion-label>Hora de la ultima sincronizacion</ion-label>
             <ion-datetime displayFormat="HH:mm:ss" [(ngModel)]="fechaSincro.Objeto"></ion-datetime>
-        </ion-item>        
+        </ion-item>
         <ion-item>
-            <ion-label>Sincronizar con el servidor</ion-label>   
+            <ion-label>Sincronizar con el servidor</ion-label>
             <img src="../../assets/icon/sincronizar.png" outline ion-button item-right (click)="subirInformacion()">
         </ion-item>
 
@@ -50,15 +54,19 @@
             Personalizacion
         </ion-list-header>
         <ion-item>
-            <ion-label>Vista de Facturas Pagadas</ion-label>           
+            <ion-label>Vista de Facturas Pagadas</ion-label>
             <ion-toggle [(ngModel)]="EstadoVF.Estado"></ion-toggle>
         </ion-item>
         <ion-item>
-            <ion-label>Indicar Montos Anteriores de Pago</ion-label>           
+            <ion-label>Indicar Montos Anteriores de Pago</ion-label>
             <ion-toggle [(ngModel)]="EstadoMC.Estado"></ion-toggle>
         </ion-item>
     </ion-list>
 
-
-
 </ion-content>
+
+<ion-footer>
+    <ion-toolbar>
+        <button ion-button block color="secondary" (click)="guardarDatos()">Guardar</button>
+    </ion-toolbar>
+</ion-footer>

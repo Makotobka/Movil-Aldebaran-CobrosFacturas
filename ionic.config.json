@@ -1,5 +1,7 @@
 {
   "name": "Movil-Aldebaran-CobrosFacturas1",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "ionic-angular"
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { SqlManagerProvider } from '../../providers/sql-manager/sql-manager';
 import { ConexionHttpProvider } from '../../providers/conexion-http/conexion-http';
 import { PrincipalPage } from '../principal/principal';
@@ -9,6 +9,7 @@ import { Usuarios } from '../../Estructuras/Usuarios';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { ShowProvider } from '../../providers/show/show';
 import { SeguridadProvider } from '../../providers/seguridad/seguridad';
+import { ConfiguracionPage } from '../configuracion/configuracion';
 
 /**
  * Generated class for the LoginPage page.
@@ -27,14 +28,26 @@ export class LoginPage {
   formData = { customers_usuario: '', customers_password: '' };
   errorMessage = '';
 
-  constructor(private seguridad:SeguridadProvider,private show:ShowProvider,private con:ConexionHttpProvider ,private sqlMan:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
+  constructor(private modal:ModalController,private seguridad:SeguridadProvider,private show:ShowProvider,private con:ConexionHttpProvider ,private sqlMan:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
   }
 
   ionViewDidLoad() {    
     this.sqlMan.abrirConexion().then(async (res)=>{      
       let counUser = await this.sqlMan.selectData("Usuarios","U");
+      let urlServer:any = (await this.sqlMan.selectData("Configuracion","C",'C.Tipo=="conexionStandar"'))[0]
+      if(urlServer === undefined){
+        await this.valorDefecto();
+        urlServer = await (await this.sqlMan.selectData("Configuracion","C",'C.Tipo=="conexionStandar"'))        
+        console.log("=>")
+        this.ionViewDidLoad();
+      }else{
+        await this.con.cambiarDirServer(urlServer.Objeto);
+      }
+      console.log(urlServer)      
       if(counUser.length === 0){
-        this.descargarNecesario();
+        if(urlServer !== undefined){
+          this.descargarNecesario();
+        }
       }else{
         this.sqlMan.selectData("Usuarios","U",'U.isLogin='+true).then((res)=>{
           if(res.length>0){
@@ -54,9 +67,7 @@ export class LoginPage {
     }))      
   }
 
-  descargarInsertar(isPrimeraVez:boolean){
-    console.log(isPrimeraVez)
-    if(isPrimeraVez){
+  descargarInsertar(){
       this.show.detenerTiempo("Descargar Facturas");
       this.con.getFacturas().then(resFac=>{
         this.show.changeContentLoading("Guardando Registros de Facturas")
@@ -65,7 +76,7 @@ export class LoginPage {
             let IDFV_min=1000000;
             for (let i = 0; i < resSelecFac.length; i++) {
               const element = resSelecFac[i];
-              if(IDFV_min.valueOf()>element.IDFV.valueOf())            {
+              if(IDFV_min.valueOf()>element.IDFV.valueOf()){
                 IDFV_min = element.IDFV;
               }
             }
@@ -79,36 +90,39 @@ export class LoginPage {
             })          
           })  
         });
-      })
-    }else{
-      this.goPrincipal();
-    }
-   
+      })    
   }
 
   goPrincipal(){    
     this.navCtrl.setRoot(PrincipalPage);
   }
 
+  goConfiguracion(){
+    let ventana = this.modal.create(ConfiguracionPage);
+    ventana.present();
+    ventana.onDidDismiss(()=>{
+      //this.FraseFiltro=undefined;
+      this.ionViewDidLoad();
+    })
+  }
+
   login() {    
     this.errorMessage = '';
-    this.sqlMan.selectData("Usuarios","U",'U.Login="'+this.formData.customers_usuario+'"').then((dataUser:Usuarios[])=>{
+    this.sqlMan.selectData("Usuarios","U",'U.Login="'+this.formData.customers_usuario+'"').then(async (dataUser:Usuarios[])=>{
       if(dataUser.length===0){
         this.errorMessage='Usuario no existe'
       }else{
         let temp =this.seguridad.cifrarClave(this.formData.customers_password);
         if(temp === dataUser[0].Clave){
           dataUser[0].isLogin=true;
-          //console.log("Entro")
           this.sqlMan.insertarDatos("Usuarios",dataUser).then(async ()=>{
-            this.descargarInsertar(await this.valorDefecto());            
+            this.descargarInsertar();            
           });         
         }else{
           this.errorMessage='Contraseña Incorrecta'
         }
       }      
-    })
-    
+    })    
   }
 
   async valorDefecto(){
@@ -118,24 +132,29 @@ export class LoginPage {
       [
         {
           Tipo:"VerFacturasCero",
-          Estado:false,
+          Estado:true,
           Valor:0,
           Objeto:null
         },        {
           Tipo:"isPrimeraVez",
-          Estado:false,
+          Estado:true,
           Valor:0,
           Objeto:null
         },        {
           Tipo:"fechaUpdate",
-          Estado:false,
+          Estado:true,
           Valor:0,
           Objeto:null
         },{
           Tipo:"montoPagoCobrar",
-          Estado:false,
+          Estado:true,
           Valor:0,
           Objeto:null
+        },{
+          Tipo:"conexionStandar",
+          Estado:true,
+          Valor:0,
+          Objeto:"http://localhosts:50878/"
         }
       ]
       );      

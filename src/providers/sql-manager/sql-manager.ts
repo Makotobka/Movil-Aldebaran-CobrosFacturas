@@ -9,7 +9,7 @@ import { Configuracion } from '../../Estructuras/Configuracion';
 export class SqlManagerProvider {
 
   public conexion:Connection;
-  private nameBD="bdEvinDemostracion_44";
+  private nameBD="bdEvinDemostracion_59";
   public isCone:boolean=false;
   private tablas;
 
@@ -82,6 +82,7 @@ export class SqlManagerProvider {
     }else{
       resData = await repFacturas.createQueryBuilder("F").where("F.Saldo>0").getResults();
     }    
+    console.log("cc ",resData)
     let temp=[]
     for (let i = 0; i < resData.length; i++) {
       const element = resData[i];
@@ -141,5 +142,4 @@ export class SqlManagerProvider {
     let repositorio = this.conexion.getRepository(Tabla);
     return await repositorio.remove(registro)   
   }
-
 }

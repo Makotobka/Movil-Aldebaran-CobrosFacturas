@@ -27,6 +27,7 @@ export class CobroFacturaPage {
 
   async ionViewDidLoad() {
     this.listaFactura = await this.sqlMan.selectFacCliente(this.dataCliente.IDCT);
+    console.log(this.listaFactura)
   }
 
   goDetalleCobro(Factura){

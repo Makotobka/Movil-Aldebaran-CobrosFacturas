@@ -5,6 +5,7 @@ import { CobroFacturaPage } from '../cobro-factura/cobro-factura';
 import { LoginPage } from '../login/login';
 import { Usuarios } from '../../Estructuras/Usuarios';
 import { ConfiguracionPage } from '../configuracion/configuracion';
+import { CtasCobrar } from '../../Estructuras/CtasCobrar';
 
 /**
  * Generated class for the PrincipalPage page.
@@ -20,62 +21,57 @@ import { ConfiguracionPage } from '../configuracion/configuracion';
 })
 export class PrincipalPage {
 
-  public listaClientes:any[]=[];
-  public listaFiltro:any[]=[];
-  public FraseFiltro:string;
 
   constructor(private modal:ModalController,private sqlMan:SqlManagerProvider ,public navCtrl: NavController, public navParams: NavParams) {
     
   }
 
   async ionViewDidLoad() {
-    let isFacCero = await this.sqlMan.selectData("Configuracion","CONF",'CONF.Tipo="VerFacturasCero"');    
-    this.listaClientes = await this.sqlMan.selectGrupCliente(isFacCero[0].Estado);
-    if(this.FraseFiltro!=="" && this.FraseFiltro!==undefined){
-      let val = this.FraseFiltro
-      this.listaClientes = this.listaClientes.filter(function(item) {
-        return item.CLIENTE.toLowerCase().includes(val.toLowerCase());
-      });
+    let listaCobrado = await this.sqlMan.selectData("CtasCobrar","CTA","CTA.saveMovil==true");
+    let listaFacturas=[];
+    for (let i = 0; i < listaCobrado.length; i++) {
+      const element:any = listaCobrado[i];
+      listaFacturas.push((await this.sqlMan.selectData("Facturas","F","F.IDFV="+element.IDFV))[0])
     }
-    this.listaFiltro = JSON.parse(JSON.stringify(this.listaClientes));
-    for (let i = 0; i < this.listaFiltro .length; i++) {
-      for (let j = i+1; j < this.listaFiltro.length; j++) {
-        if(this.listaFiltro[i].Total < this.listaFiltro[j].Total){
-          let temp = this.listaFiltro[i];
-          this.listaFiltro [i] = this.listaFiltro[j];
-          this.listaFiltro[j] = temp;
+    let listaClientes = await this.unirClientes(listaFacturas);
+    console.log(listaCobrado);
+    console.log(listaFacturas);
+    console.log(listaClientes);
+  }
+
+  private unirClientes(resData:any[]){
+    let temp=[]
+    for (let i = 0; i < resData.length; i++) {
+      const element = resData[i];
+      if(temp.length===0){
+        temp.push({
+          IDCT:element.IDCT,
+          CLIENTE: element.CLIENTE,
+          Saldo:element.Saldo,
+          Total:element.Total
+        })
+      }else{
+        let exist:boolean=false;
+        for (let j = 0; j < temp.length; j++) {
+          const item = temp[j];
+          if(element.IDCT === item.IDCT){            
+            item.Saldo=item.Saldo.valueOf()+element.Saldo.valueOf();
+            item.Total=item.Total.valueOf()+element.Total.valueOf();
+            exist=true;
+            break;
+          }          
+        }
+        if(!exist){
+          temp.push({
+            IDCT:element.IDCT,
+            CLIENTE: element.CLIENTE,
+            Saldo:element.Saldo,
+            Total:element.Total
+          })
         }
       }
-    }    
+    }
+    return temp;
   }
 
-  goDetalleCobro(dataRow){
-    let ventanaCobro = this.modal.create(CobroFacturaPage,{data:dataRow});
-    ventanaCobro.present();
-    ventanaCobro.onDidDismiss(()=>{
-      this.FraseFiltro=undefined;
-      this.ionViewDidLoad();
-    })
-  }
-
-  logout(){    
-    this.sqlMan.selectData("Usuarios","U",'U.isLogin='+true).then((res)=>{      
-      res[0].isLogin=false;
-      this.sqlMan.insertarDatos("Usuarios",res[0]);
-      this.navCtrl.setRoot(LoginPage);
-    });
-  }
-
-  goConfiguracion(){
-    let ventana = this.modal.create(ConfiguracionPage);
-    ventana.present();
-    ventana.onDidDismiss(()=>{
-      this.FraseFiltro=undefined;
-      this.ionViewDidLoad();
-    })
-  }
-
-  onInput(event){
-    this.ionViewDidLoad();
-  }
 }

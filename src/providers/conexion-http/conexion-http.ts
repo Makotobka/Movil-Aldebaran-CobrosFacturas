@@ -1,22 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Http, RequestOptions, ResponseContentType, Headers, RequestMethod } from '@angular/http';
-import { dirServer, uriAPI } from './rutas';
+import { uriAPI } from './rutas';
 
 @Injectable()
 export class ConexionHttpProvider {
 
   private opciones:RequestOptions;
+  private dirServer:string="";
   public metodo:string;               //-- Metodo de solicitud realizado
   public codigo:number;               //-- codigo HTTP estandar.
   public mensaje:string;              //-- Mensaje correspondiente al codigo HTPP .  
-  public isOnline;
+  public isOnline:boolean = true;;
 
   constructor(public http: Http) {
     
   }
 
+  cambiarDirServer(URI:string){    
+    this.dirServer = URI;
+  }
+
   llenarDatosRespons(respuesta:any){
-    //this.data = respuesta._body;
     this.mensaje = respuesta.statusText;
     this.codigo = respuesta.status;    
     if(!respuesta.ok){
@@ -31,10 +35,12 @@ export class ConexionHttpProvider {
 
   async getFacturas(){
     try{      
-        let respuesta = await this.http.get(dirServer+uriAPI.getFacturasCredito).toPromise();
+        let respuesta = await this.http.get(this.dirServer+uriAPI.getFacturasCredito).toPromise();       
+        this.isOnline=true;
         return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{
       console.log("erro http")
+      this.isOnline=false;
       return [];
     }    
   }
@@ -42,31 +48,36 @@ export class ConexionHttpProvider {
   async getCtaCobrar(IDFV){
     try{      
       let parametro = IDFV;
-      let respuesta = await this.http.get(dirServer+uriAPI.getCtsPagarFactura+parametro).toPromise();
+      let respuesta = await this.http.get(this.dirServer+uriAPI.getCtsPagarFactura+parametro).toPromise();
+      this.isOnline=true;
       return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{
       console.log("erro http")
+      this.isOnline=false;
       return [];
     }    
   }
 
   async getUsuarios(){
     try{            
-      let respuesta = await this.http.get(dirServer+uriAPI.getusuarios).toPromise();
+      let respuesta = await this.http.get(this.dirServer+uriAPI.getusuarios).toPromise();
+      this.isOnline=true;
       return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{
       console.log("erro http")
+      this.isOnline=false;
       return [];
     }    
   }
 
   async setCtsCobrar(data:any){
-    try{           
-      console.log(dirServer+uriAPI.setCtasAll) 
-      let respuesta = await this.http.post(dirServer+uriAPI.setCtasAll,data).toPromise();
+    try{                 
+      let respuesta = await this.http.post(this.dirServer+uriAPI.setCtasAll,data).toPromise();
+      this.isOnline=true;
       return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{
       console.log("erro http")
+      this.isOnline=false;
       return [];
     }    
   }

@@ -1,6 +1,6 @@
 import { ArchivoProvider } from './../../providers/archivo/archivo';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { Configuracion } from '../../Estructuras/Configuracion';
 import { SqlManagerProvider } from '../../providers/sql-manager/sql-manager';
 import { ConexionHttpProvider } from '../../providers/conexion-http/conexion-http';
@@ -24,24 +24,26 @@ export class ConfiguracionPage {
   public EstadoVF:any={Estado:true};
   public EstadoMC:any={Estado:true};
   public fechaSincro:any = { Objeto:"" };
+  private DirServe:any;
   private Config:Configuracion[];
+  public IP:any="";
+  public Puerto:any="";
 
-  constructor(private show:ShowProvider,private con:ConexionHttpProvider,private sqlman:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
+  constructor(private app:App,private show:ShowProvider,private con:ConexionHttpProvider,private sqlman:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
 
   }
 
   async ionViewDidLoad() {    
     
-    this.EstadoVF = (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "VerFacturasCero"'))[0]
-    this.fechaSincro = (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "fechaUpdate"'))[0]
-    this.EstadoMC = (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "montoPagoCobrar"'))[0]     
+    this.EstadoVF =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "VerFacturasCero"'))[0]
+    this.fechaSincro =  (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "fechaUpdate"'))[0]
+    this.EstadoMC =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "montoPagoCobrar"'))[0]     
+    this.DirServe =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "conexionStandar"'))[0]     
     if(this.fechaSincro.Objeto === undefined || this.fechaSincro.Objeto === null){
       this.fechaSincro.Objeto = new Date().toISOString();
-    }       
-
-    console.log(this.EstadoVF)
-    console.log(this.EstadoMC)
-    console.log(this.fechaSincro)
+    }     
+    this.IP = this.DirServe.Objeto.split("/")[2].split(":")[0]
+    this.Puerto = this.DirServe.Objeto.split("/")[2].split(":")[1]
   }
   
   ionViewWillLeave() {
@@ -85,5 +87,9 @@ export class ConfiguracionPage {
     })    
   }
 
-
+  guardarDatos(){    
+    this.DirServe.Objeto = "http://"+this.IP+":"+this.Puerto+"/"
+    this.sqlman.insertarDatos("Configuracion",this.DirServe);
+    this.app.goBack();
+  }
 }

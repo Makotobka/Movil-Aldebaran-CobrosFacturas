@@ -33,7 +33,7 @@ export class DetalleFacturaPage {
   async ionViewDidLoad() {
     //this.ListaCobros = await this.sqlmanselec
     this.ListaCobros = await this.sqlman.selectDetalleCobro(this.Factura.IDFV);
-
+    console.log(this.ListaCobros)
     this.sumaCtsCobrar=0;
     for (let i = 0; i <  this.ListaCobros.length; i++) {
       const element =  this.ListaCobros[i];      
@@ -69,7 +69,9 @@ export class DetalleFacturaPage {
   
           this.isCambio=true;
           this.Factura.Saldo = this.Factura.Saldo.valueOf()-valor.valueOf();
-  
+          if(this.Factura.Saldo.valueOf()<=0.009){
+            this.Factura.Saldo = 0;
+          }
           let registro = {
             IDSU:this.Factura.IDSU,
             IDPT:this.Factura.IDPT,
