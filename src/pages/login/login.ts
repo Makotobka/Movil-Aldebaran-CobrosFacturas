@@ -121,9 +121,18 @@ export class LoginPage {
           Estado:false,
           Valor:0,
           Objeto:null
-        },
-        {
+        },        {
           Tipo:"isPrimeraVez",
+          Estado:false,
+          Valor:0,
+          Objeto:null
+        },        {
+          Tipo:"fechaUpdate",
+          Estado:false,
+          Valor:0,
+          Objeto:null
+        },{
+          Tipo:"montoPagoCobrar",
           Estado:false,
           Valor:0,
           Objeto:null

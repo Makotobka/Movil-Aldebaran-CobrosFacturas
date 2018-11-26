@@ -6,6 +6,7 @@ import { PipesModule } from '../pipes/pipes.module';
 
 export const importaciones = [
     
+    
     BrowserModule,
     HttpModule,
     FormsModule,

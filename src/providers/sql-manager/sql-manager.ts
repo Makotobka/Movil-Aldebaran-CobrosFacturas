@@ -9,11 +9,9 @@ import { Configuracion } from '../../Estructuras/Configuracion';
 export class SqlManagerProvider {
 
   public conexion:Connection;
-  private nameServer:string="default";  // NO TOCAR EL NOMBRE - YA ES POR DEFECTO
-  private nameBD="bdEvinDemostracion_40";
+  private nameBD="bdEvinDemostracion_44";
   public isCone:boolean=false;
   private tablas;
-
 
   constructor() {
   }

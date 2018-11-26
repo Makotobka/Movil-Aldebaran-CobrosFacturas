@@ -13,6 +13,9 @@ import { importaciones } from './app.importaciones';
 import { proveedores } from './app.provedores';
 import { SeguridadProvider } from '../providers/seguridad/seguridad';
 import { ShowProvider } from '../providers/show/show';
+import { ArchivoProvider } from '../providers/archivo/archivo';
+import { IonicStorageModule } from '@ionic/storage';
+import { staticConfigStorage } from './app.config';
 
 @NgModule({
   declarations: [
@@ -21,6 +24,7 @@ import { ShowProvider } from '../providers/show/show';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot(staticConfigStorage),
     importaciones
   ],
   bootstrap: [IonicApp],
@@ -28,7 +32,8 @@ import { ShowProvider } from '../providers/show/show';
     paginas
   ],
   providers: [
-    proveedores
+    proveedores,
+    ArchivoProvider
   ]
 })
 export class AppModule {}

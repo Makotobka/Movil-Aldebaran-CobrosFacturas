@@ -1,3 +1,4 @@
+import { ArchivoProvider } from './../providers/archivo/archivo';
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
@@ -14,5 +15,6 @@ export const proveedores = [
     ConexionHttpProvider,
     SqlManagerProvider,    
     SeguridadProvider,
-    ShowProvider
+    ShowProvider,
+    ArchivoProvider
 ]

@@ -31,6 +31,7 @@
     "ionicons": "3.0.0",
     "md5-typescript": "^1.0.5",
     "rxjs": "5.5.11",
+    "storage": "^0.2.0",
     "sw-toolbox": "3.6.0",
     "zone.js": "0.8.26"
   },

@@ -33,15 +33,16 @@ export class DetalleFacturaPage {
   async ionViewDidLoad() {
     //this.ListaCobros = await this.sqlmanselec
     this.ListaCobros = await this.sqlman.selectDetalleCobro(this.Factura.IDFV);
-      this.sumaCtsCobrar=0;
+
+    this.sumaCtsCobrar=0;
     for (let i = 0; i <  this.ListaCobros.length; i++) {
       const element =  this.ListaCobros[i];      
       this.sumaCtsCobrar = this.sumaCtsCobrar.valueOf()+element.Valor.valueOf();
     }
   }
 
-  anadirCobro(){
-    this.show.showAlertInputs("Añadir Cobro",[{
+  async anadirCobro(){    
+    this.show.showAlertInputs("AÑADIR COBRO",[{
         text:'Cancelar',
         handler: data=>{
           
@@ -58,7 +59,7 @@ export class DetalleFacturaPage {
           placeholder:'Valor',
           type: 'number'
         }
-      ],"Cliente: "+this.Factura.CLIENTE+"\nRegistre el monto a pagar");
+      ]);
   }
 
   async guardarCobros(valor:number){
@@ -100,9 +101,14 @@ export class DetalleFacturaPage {
 
   }
 
-  editarRegistro(fila:CtasCobrar){
+  async editarRegistro(fila:CtasCobrar){
     if(fila.saveMovil){
-      this.show.showAlertInputs("Editar Cobro",
+      let temp = (await this.sqlman.selectData("Configuracion","C",'C.Tipo=="montoPagoCobrar"'))[0];
+      let textoValor=undefined;
+      if(temp.Estado){
+        textoValor="Valor Anterior: $ "+fila.Valor;
+      }
+      this.show.showAlertInputs("EDITAR COBRO",
         [ 
           {
             text:'Cancelar'
@@ -125,9 +131,7 @@ export class DetalleFacturaPage {
             placeholder:'Valor',
             type: 'number'
           }
-        ],
-        "Registre el NUEVO monto a pagar"
-      );
+        ],textoValor);
     }
     
   }

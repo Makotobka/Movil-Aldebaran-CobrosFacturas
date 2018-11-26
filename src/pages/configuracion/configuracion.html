@@ -20,26 +20,45 @@
 
 <ion-content>
 
-    <ion-grid class="listaConfiguracion">
-        <ion-row class="item">
-            <ion-col col-9 class="texto">
-                Habilitar Vista de Facturas con Saldo 0
-            </ion-col>
-            <ion-col col-3 class="obj">
-                <ion-toggle [(ngModel)]="isHabiFac.Estado"></ion-toggle>
-            </ion-col>
-        </ion-row>
-        <ion-row class="item">
-            <ion-col col-9 class="texto">
-                Sincronizar con el servidor
-            </ion-col>
-            <ion-col col-3 class="obj">
-                <button ion-button full icon-only (click)="subirInformacion()">
-                    <ion-icon name="arrow-back"></ion-icon>
-                </button>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
+    <ion-list class="listaItem">     
+        
+        <ion-list-header>
+            Servidor
+        </ion-list-header>
+        <ion-item>
+
+        </ion-item>
+
+
+        <ion-list-header>
+            Sincronizacion
+        </ion-list-header>
+        <ion-item>
+            <ion-label>Fecha de la ultima sincronizacion</ion-label>           
+            <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="fechaSincro.Objeto"></ion-datetime>
+        </ion-item>
+        <ion-item>
+            <ion-label>Hora de la ultima sincronizacion</ion-label>           
+            <ion-datetime displayFormat="HH:mm:ss" [(ngModel)]="fechaSincro.Objeto"></ion-datetime>
+        </ion-item>        
+        <ion-item>
+            <ion-label>Sincronizar con el servidor</ion-label>   
+            <img src="../../assets/icon/sincronizar.png" outline ion-button item-right (click)="subirInformacion()">
+        </ion-item>
+
+        <ion-list-header>
+            Personalizacion
+        </ion-list-header>
+        <ion-item>
+            <ion-label>Vista de Facturas Pagadas</ion-label>           
+            <ion-toggle [(ngModel)]="EstadoVF.Estado"></ion-toggle>
+        </ion-item>
+        <ion-item>
+            <ion-label>Indicar Montos Anteriores de Pago</ion-label>           
+            <ion-toggle [(ngModel)]="EstadoMC.Estado"></ion-toggle>
+        </ion-item>
+    </ion-list>
+
 
 
 </ion-content>
