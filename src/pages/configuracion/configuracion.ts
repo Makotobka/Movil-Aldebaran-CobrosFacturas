@@ -34,8 +34,6 @@ export class ConfiguracionPage {
   }
 
   async ionViewDidLoad() {    
-    
-    this.EstadoVF =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "VerFacturasCero"'))[0]
     this.fechaSincro =  (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "fechaUpdate"'))[0]
     this.EstadoMC =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "montoPagoCobrar"'))[0]     
     this.DirServe =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "conexionStandar"'))[0]     

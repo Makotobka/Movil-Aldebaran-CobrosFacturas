@@ -1,6 +1,6 @@
-.gridData {    
-    padding: 20px !important;    
-    font-size: small;    
+.gridData {
+    padding: 20px !important;
+    font-size: small;
     .cabezera {
         margin-bottom: 5px;
         border-bottom: 2px solid black;
@@ -8,16 +8,14 @@
         .numeroResaltado {
             text-align: end;
         }
-        .col{
+        .col {
             align-self: center;
         }
-
     }
     .cuerpo {
         border-bottom: 2px solid lightgrey;
         margin-bottom: 2px;
-        margin-top: 2px; 
-        
+        margin-top: 2px;
         .numeroResaltado {
             //font-size: medium;
             text-align: end;
@@ -54,5 +52,21 @@
             margin-top: 5px;
             margin-bottom: 0;
         }
+    }
+}
+
+.action-sheets {
+    .ion-md-share {
+        color: #ED4248;
+    }
+    .ion-md-arrow-dropright-circle {
+        color: #508AE4;
+    }
+    .ion-md-heart-outline {
+        color: #31D55F;
+    }
+    .action-sheet-cancel ion-icon,
+    .action-sheet-destructive ion-icon {
+        color: #757575;
     }
 }

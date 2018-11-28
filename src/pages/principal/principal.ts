@@ -1,18 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { SqlManagerProvider } from '../../providers/sql-manager/sql-manager';
-import { CobroFacturaPage } from '../cobro-factura/cobro-factura';
-import { LoginPage } from '../login/login';
-import { Usuarios } from '../../Estructuras/Usuarios';
-import { ConfiguracionPage } from '../configuracion/configuracion';
-import { CtasCobrar } from '../../Estructuras/CtasCobrar';
-
-/**
- * Generated class for the PrincipalPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { Chart } from 'chart.js';
+import { colorFondoPaste, colorBordePaste } from '../../app/app.config';
+import { Facturas } from '../../Estructuras/Facturas';
 
 @IonicPage()
 @Component({
@@ -21,22 +12,20 @@ import { CtasCobrar } from '../../Estructuras/CtasCobrar';
 })
 export class PrincipalPage {
 
+  @ViewChild('grafCobro') canvaCobro;
+  private totalPersonas:number=0;
+  private totalRecaudado:number=0;
+  private totalDeuda:number=0;
+  private totalDiario:number=0;
 
   constructor(private modal:ModalController,private sqlMan:SqlManagerProvider ,public navCtrl: NavController, public navParams: NavParams) {
     
   }
 
-  async ionViewDidLoad() {
-    let listaCobrado = await this.sqlMan.selectData("CtasCobrar","CTA","CTA.saveMovil==true");
-    let listaFacturas=[];
-    for (let i = 0; i < listaCobrado.length; i++) {
-      const element:any = listaCobrado[i];
-      listaFacturas.push((await this.sqlMan.selectData("Facturas","F","F.IDFV="+element.IDFV))[0])
-    }
-    let listaClientes = await this.unirClientes(listaFacturas);
-    console.log(listaCobrado);
-    console.log(listaFacturas);
-    console.log(listaClientes);
+  async ionViewWillEnter(){
+    await this.calcularValores();
+    await this.crearGraficos();
+    await this.llenarGraficos();
   }
 
   private unirClientes(resData:any[]){
@@ -50,6 +39,7 @@ export class PrincipalPage {
           Saldo:element.Saldo,
           Total:element.Total
         })
+        
       }else{
         let exist:boolean=false;
         for (let j = 0; j < temp.length; j++) {
@@ -58,6 +48,7 @@ export class PrincipalPage {
             item.Saldo=item.Saldo.valueOf()+element.Saldo.valueOf();
             item.Total=item.Total.valueOf()+element.Total.valueOf();
             exist=true;
+            
             break;
           }          
         }
@@ -68,10 +59,80 @@ export class PrincipalPage {
             Saldo:element.Saldo,
             Total:element.Total
           })
+          
         }
       }
     }
     return temp;
+  }
+
+  private async calcularValores(){
+    this.totalDeuda=0;this.totalRecaudado=0;this.totalDiario=0;
+    let listaCobrado = await this.sqlMan.selectData("CtasCobrar","CTA","CTA.saveMovil==true");
+    let listaFacturasTotales = await this.sqlMan.selectData("Facturas","F","F.Saldo>0");
+    listaFacturasTotales.forEach((fac:Facturas) => {      
+      this.totalDeuda = this.totalDeuda.valueOf()+fac.Total.valueOf();
+    });
+    let listaFacturas=[];
+    let hoy:Date = new Date();
+    for (let i = 0; i < listaCobrado.length; i++) {
+      const element:any = listaCobrado[i];
+      if(hoy.getFullYear()===element.Fecha.getFullYear() && hoy.getMonth()===element.Fecha.getMonth() && hoy.getDay()===element.Fecha.getDay()){
+        this.totalDiario= this.totalDiario.valueOf()+element.Valor.valueOf();
+      }
+      listaFacturas.push((await this.sqlMan.selectData("Facturas","F","F.IDFV="+element.IDFV))[0])
+      this.totalRecaudado= this.totalRecaudado.valueOf()+element.Valor.valueOf();
+    }
+    let listaClientes = await this.unirClientes(listaFacturas);    
+    this.totalPersonas = listaClientes.length;
+
+    console.log(listaClientes) 
+    console.log(this.totalPersonas) 
+    console.log(this.totalRecaudado) 
+    console.log(this.totalDeuda) 
+    console.log(this.totalDiario) 
+  }
+
+  crearGraficos(){
+    if(this.canvaCobro.nativeElement!=undefined){
+      this.canvaCobro = new Chart(this.canvaCobro.nativeElement, { 
+        type: 'doughnut',
+        data: {
+            labels: [
+              "Total",
+              "Abonado"
+            ],            
+            datasets: [{      
+                label: 'Sin Caja',
+                data:[
+                  100,
+                  35.26
+                ],
+                backgroundColor: colorFondoPaste,
+                borderColor: colorBordePaste,
+                borderWidth: 3
+            }]           
+        },
+        options: {
+          legend: {
+            position: "bottom",
+            display: true        
+          },
+          animation:{
+            animateRotate:true,
+            animateScale:true
+          }
+        }
+      });
+    }
+    //------------------ UPDATE ------------------------------
+    this.canvaCobro.update()    
+  }
+
+  llenarGraficos(){
+    this.canvaCobro.data.datasets[0].data = [this.totalDeuda,this.totalRecaudado];
+    console.log(this.canvaCobro)
+    this.canvaCobro.update() 
   }
 
 }

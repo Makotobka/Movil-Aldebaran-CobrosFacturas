@@ -9,4 +9,35 @@
 </ion-header>
 <ion-content>
 
+    <ion-card>
+        <ion-card-header>
+            <ion-item align-items-center>
+                Recaudacion
+            </ion-item>
+        </ion-card-header>
+
+        <ion-card-content>
+            <ion-row>
+                <ion-col col-9>
+                    Clientes Visitados:
+                </ion-col>
+                <ion-col col-3>
+                    $ {{totalPersonas | redondear}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col col-9>
+                    Recaudacion Diaria:
+                </ion-col>
+                <ion-col col-3>
+                    $ {{totalDiario| redondear}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <canvas #grafCobro baseChart>
+                </canvas>
+            </ion-row>
+        </ion-card-content>
+    </ion-card>
+
 </ion-content>

@@ -17,7 +17,7 @@ export class ShowProvider {
   private idFun=undefined;
   private titulo:string;
   
-  constructor(private alertCtrl: AlertController,    private loadingCtrl: LoadingController,    private actionSheetCtrl: ActionSheetController,    private toastCtrl: ToastController) {
+  constructor(public actionsheetCtrl: ActionSheetController ,private alertCtrl: AlertController,    private loadingCtrl: LoadingController,    private actionSheetCtrl: ActionSheetController,    private toastCtrl: ToastController) {
     
   }
 
@@ -88,6 +88,15 @@ export class ShowProvider {
     });
 
     toast.present();
+  }
+
+  showAccionSheet(Titulo:string, Butones:any[]){
+    let actionSheet = this.actionsheetCtrl.create({
+      title:Titulo,
+      cssClass:'action-sheets',
+      buttons:Butones
+    });
+    actionSheet.present();
   }
 
   async detenerTiempo(textoContenido?:string,controlTiempo?,nameIcono?:string){    
