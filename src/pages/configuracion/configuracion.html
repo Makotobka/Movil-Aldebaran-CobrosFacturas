@@ -22,9 +22,13 @@
         </ion-list-header>
         <ion-item>
             <ion-label color="primary" stacked>Direccion IP: </ion-label>
-            <ion-input placeholder="192.168.0.2" [(ngModel)]="IP"></ion-input>
+            <ion-input placeholder="192.168.0.2 o www.pagina.com" [(ngModel)]="IP"></ion-input>
         </ion-item>
         <ion-item>
+            <ion-label>Habilitar Puerto</ion-label>
+            <ion-toggle (ionChange)="isDisabled = !isDisabled"></ion-toggle>
+        </ion-item>
+        <ion-item *ngIf="isDisabled">
             <ion-label color="primary" stacked>Puerto: </ion-label>
             <ion-input type="number" placeholder="12345" [(ngModel)]="Puerto"></ion-input>
         </ion-item>

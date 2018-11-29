@@ -4,6 +4,7 @@ import { SqlManagerProvider } from '../../providers/sql-manager/sql-manager';
 import { Chart } from 'chart.js';
 import { colorFondoPaste, colorBordePaste } from '../../app/app.config';
 import { Facturas } from '../../Estructuras/Facturas';
+import { LoginPage } from '../login/login';
 
 @IonicPage()
 @Component({
@@ -13,6 +14,7 @@ import { Facturas } from '../../Estructuras/Facturas';
 export class PrincipalPage {
 
   @ViewChild('grafCobro') canvaCobro;
+  private totalFacturasPagadas:number=0;
   private totalPersonas:number=0;
   private totalRecaudado:number=0;
   private totalDeuda:number=0;
@@ -67,7 +69,7 @@ export class PrincipalPage {
   }
 
   private async calcularValores(){
-    this.totalDeuda=0;this.totalRecaudado=0;this.totalDiario=0;
+    this.totalDeuda=0;this.totalRecaudado=0;this.totalDiario=0,this.totalFacturasPagadas=0;;
     let listaCobrado = await this.sqlMan.selectData("CtasCobrar","CTA","CTA.saveMovil==true");
     let listaFacturasTotales = await this.sqlMan.selectData("Facturas","F","F.Saldo>0");
     listaFacturasTotales.forEach((fac:Facturas) => {      
@@ -86,11 +88,12 @@ export class PrincipalPage {
     let listaClientes = await this.unirClientes(listaFacturas);    
     this.totalPersonas = listaClientes.length;
 
-    console.log(listaClientes) 
-    console.log(this.totalPersonas) 
-    console.log(this.totalRecaudado) 
-    console.log(this.totalDeuda) 
-    console.log(this.totalDiario) 
+    for (let i = 0; i < listaFacturas.length; i++) {
+      const element = listaFacturas[i];
+      if(element.Saldo===0){
+        this.totalFacturasPagadas = this.totalFacturasPagadas.valueOf()+1;    
+      }
+    }
   }
 
   crearGraficos(){
@@ -134,5 +137,12 @@ export class PrincipalPage {
     console.log(this.canvaCobro)
     this.canvaCobro.update() 
   }
-
+  
+  logout(){    
+    this.sqlMan.selectData("Usuarios","U",'U.isLogin='+true).then((res:any)=>{      
+      res[0].isLogin=false;
+      this.sqlMan.insertarDatos("Usuarios",res[0]);
+      this.navCtrl.setRoot(LoginPage);
+    });
+  }
 }

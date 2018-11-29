@@ -43,13 +43,7 @@ export class ListaCobrosPage {
     this.navCtrl.setRoot(PrincipalPage);
   }
 
-  logout(){    
-    this.sqlMan.selectData("Usuarios","U",'U.isLogin='+true).then((res:any)=>{      
-      res[0].isLogin=false;
-      this.sqlMan.insertarDatos("Usuarios",res[0]);
-      this.navCtrl.setRoot(LoginPage);
-    });
-  }
+  
 
   async opciones(){
     let EstadoVF:any = (await this.sqlMan.selectData("Configuracion","C",'C.Tipo = "VerFacturasCero"'))[0]

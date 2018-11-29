@@ -3,9 +3,7 @@
     <ion-navbar>
         <ion-title text-center>CUENTAS POR COBRAR</ion-title>
         <ion-buttons right>
-            <button ion-button icon-only (click)="logout()">
-                <ion-icon name="log-out"></ion-icon>
-            </button>
+
             <button ion-button icon-only (click)="opciones()">
                 <ion-icon name="more"></ion-icon>
             </button>
@@ -32,10 +30,10 @@
             <ion-col col-6>
                 {{item.CLIENTE | uppercase}}
             </ion-col>
-            <ion-col class="numeroResaltado" col-3>
+            <ion-col class="TextoNumeros" col-3>
                 $ {{item.Total | redondear}}
             </ion-col>
-            <ion-col class="numeroResaltado SaldoMaximo" col-3 [ngClass]="{SaldoMaximo: item.Saldo == item.Total, SaldoNormal: (item.Saldo > 0 && item.Saldo < item.Total), Saldo0:item.Saldo == 0}">
+            <ion-col class="TextoNumeros" col-3 [ngClass]="{SaldoMaximo: item.Saldo == item.Total, SaldoNormal: (item.Saldo > 0 && item.Saldo < item.Total), Saldo0:item.Saldo == 0}">
                 $ {{item.Saldo | redondear}}
             </ion-col>
         </ion-row>

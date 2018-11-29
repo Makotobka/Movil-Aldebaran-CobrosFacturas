@@ -29,21 +29,15 @@ export class LoginPage {
   errorMessage = '';
 
   constructor(private modal:ModalController,private seguridad:SeguridadProvider,private show:ShowProvider,private con:ConexionHttpProvider ,private sqlMan:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
-  }
-
-  ionViewDidLoad() {    
-    this.sqlMan.abrirConexion().then(async (res)=>{      
+    this.sqlMan.abrirConexion().then(async (res)=>{          
       let counUser = await this.sqlMan.selectData("Usuarios","U");
       let urlServer:any = (await this.sqlMan.selectData("Configuracion","C",'C.Tipo=="conexionStandar"'))[0]
       if(urlServer === undefined){
         await this.valorDefecto();
         urlServer = await (await this.sqlMan.selectData("Configuracion","C",'C.Tipo=="conexionStandar"'))        
-        console.log("=>")
-        this.ionViewDidLoad();
       }else{
-        await this.con.cambiarDirServer(urlServer.Objeto);
-      }
-      console.log(urlServer)      
+        this.con.dirServer = await urlServer.Objeto;
+      }      
       if(counUser.length === 0){
         if(urlServer !== undefined){
           this.descargarNecesario();
@@ -101,8 +95,6 @@ export class LoginPage {
     let ventana = this.modal.create(ConfiguracionPage);
     ventana.present();
     ventana.onDidDismiss(()=>{
-      //this.FraseFiltro=undefined;
-      this.ionViewDidLoad();
     })
   }
 
@@ -154,7 +146,7 @@ export class LoginPage {
           Tipo:"conexionStandar",
           Estado:true,
           Valor:0,
-          Objeto:"http://localhosts:50878/"
+          Objeto:"http://localhost:50878/"
         }
       ]
       );      

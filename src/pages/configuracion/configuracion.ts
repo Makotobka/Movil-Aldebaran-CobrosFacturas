@@ -28,6 +28,7 @@ export class ConfiguracionPage {
   private Config:Configuracion[];
   public IP:any="";
   public Puerto:any="";
+  public isDisabled=false;
 
   constructor(private app:App,private show:ShowProvider,private con:ConexionHttpProvider,private sqlman:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
 
@@ -39,9 +40,10 @@ export class ConfiguracionPage {
     this.DirServe =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "conexionStandar"'))[0]     
     if(this.fechaSincro.Objeto === undefined || this.fechaSincro.Objeto === null){
       this.fechaSincro.Objeto = new Date().toISOString();
-    }     
-    this.IP = this.DirServe.Objeto.split("/")[2].split(":")[0]
-    this.Puerto = this.DirServe.Objeto.split("/")[2].split(":")[1]
+    }         
+    const dirCompleta:string = this.DirServe.Objeto.substring(7,this.DirServe.Objeto.length);
+    this.IP = dirCompleta.split(":")[0]
+    this.Puerto = dirCompleta.split(":")[1]
   }
   
   ionViewWillLeave() {
@@ -85,9 +87,16 @@ export class ConfiguracionPage {
     })    
   }
 
-  guardarDatos(){    
-    this.DirServe.Objeto = "http://"+this.IP+":"+this.Puerto+"/"
+  async guardarDatos(){    
+    /*http://buhocorp.com/api/cobros_aldebaran/pruebas*/
+    console.log(this.isDisabled)
+    if(!this.isDisabled){
+      this.DirServe.Objeto = "http://"+this.IP
+    }else{
+      this.DirServe.Objeto = "http://"+this.IP+":"+this.Puerto
+    }    
     this.sqlman.insertarDatos("Configuracion",this.DirServe);
+    this.con.dirServer = await this.DirServe.Objeto;
     this.app.goBack();
   }
 }

@@ -84,10 +84,10 @@
             <ion-col col-3 style="font-size: xx-small;">
                 {{item.Numero}}
             </ion-col>
-            <ion-col class="numeroResaltado" col-3>
+            <ion-col class="TextoNumeros" col-3>
                 $ {{item.Total | redondear}}
             </ion-col>
-            <ion-col class="numeroResaltado" col-3>
+            <ion-col class="TextoNumeros" col-3 [ngClass]="{SaldoMaximo: item.Saldo == item.Total, SaldoNormal: (item.Saldo > 0 && item.Saldo < item.Total), Saldo0:item.Saldo == 0}">
                 $ {{item.Saldo | redondear}}
             </ion-col>
         </ion-row>

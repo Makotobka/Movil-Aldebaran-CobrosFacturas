@@ -9,7 +9,7 @@ import { Configuracion } from '../../Estructuras/Configuracion';
 export class SqlManagerProvider {
 
   public conexion:Connection;
-  private nameBD="bdEvinDemostracion_62";
+  private nameBD="bdEvinDemostracionA_03";
   public isCone:boolean=false;
   private tablas;
 

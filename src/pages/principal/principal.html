@@ -1,18 +1,25 @@
 <ion-header>
+
     <ion-navbar>
-        <ion-buttons>
+        <ion-title text-center>DASHBOARD</ion-title>
+        <ion-buttons left>
             <button ion-button menuToggle="leftMenu">
-                 <ion-icon name="menu"></ion-icon>
+                <ion-icon name="menu"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-buttons right>
+            <button ion-button icon-only (click)="logout()">
+                <ion-icon name="log-out"></ion-icon>
             </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
 <ion-content>
 
-    <ion-card>
+    <ion-card class="cardTable">
         <ion-card-header>
             <ion-item align-items-center>
-                Recaudacion
+                Cotabilizacion de Facturas
             </ion-item>
         </ion-card-header>
 
@@ -21,15 +28,34 @@
                 <ion-col col-9>
                     Clientes Visitados:
                 </ion-col>
-                <ion-col col-3>
-                    $ {{totalPersonas | redondear}}
+                <ion-col col-3 class="TextoNumeros">
+                    {{totalPersonas | redondear:'entero'}}
                 </ion-col>
             </ion-row>
             <ion-row>
                 <ion-col col-9>
+                    Facturas Completamente Pagadas:
+                </ion-col>
+                <ion-col col-3 class="TextoNumeros">
+                    {{totalFacturasPagadas| redondear:'entero'}}
+                </ion-col>
+            </ion-row>
+        </ion-card-content>
+    </ion-card>
+
+    <ion-card class="cardTable">
+        <ion-card-header>
+            <ion-item align-items-center>
+                Recaudacion Diaria
+            </ion-item>
+        </ion-card-header>
+
+        <ion-card-content>
+            <ion-row>
+                <ion-col col-9>
                     Recaudacion Diaria:
                 </ion-col>
-                <ion-col col-3>
+                <ion-col col-3 class="TextoNumeros">
                     $ {{totalDiario| redondear}}
                 </ion-col>
             </ion-row>
@@ -39,5 +65,7 @@
             </ion-row>
         </ion-card-content>
     </ion-card>
+
+
 
 </ion-content>

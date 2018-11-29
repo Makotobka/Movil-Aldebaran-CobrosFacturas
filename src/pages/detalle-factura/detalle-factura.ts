@@ -105,7 +105,7 @@ export class DetalleFacturaPage {
 
   async editarRegistro(fila:CtasCobrar){
     if(fila.saveMovil){
-      let temp = (await this.sqlman.selectData("Configuracion","C",'C.Tipo=="montoPagoCobrar"'))[0];
+      let temp:any = (await this.sqlman.selectData("Configuracion","C",'C.Tipo=="montoPagoCobrar"'))[0];
       let textoValor=undefined;
       if(temp.Estado){
         textoValor="Valor Anterior: $ "+fila.Valor;
@@ -120,20 +120,8 @@ export class DetalleFacturaPage {
             handler: data=>{
               this.eliminarCobro(fila);
             }
-          },{
-            text:'Editar',
-            handler: data=>{            
-              this.editarCobro(fila,data.Valor);
-            }
           }
-        ],
-        [
-          {
-            name:'Valor',
-            placeholder:'Valor',
-            type: 'number'
-          }
-        ],textoValor);
+        ],[],textoValor);
     }
     
   }
