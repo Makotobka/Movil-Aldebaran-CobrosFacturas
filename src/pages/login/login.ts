@@ -53,37 +53,48 @@ export class LoginPage {
   }
 
   descargarNecesario(){
-    this.show.detenerTiempo("Descargar Usuarios");
-    this.con.getUsuarios().then((resUsuario=>{
-      this.sqlMan.insertarDatos("Usuarios",resUsuario).then(()=>{
+    this.show.detenerTiempo("Descargando Usuarios");
+    this.con.getUsuarios().then((resUsuario)=>{   
+      if(this.con.isOnline) {
+        this.sqlMan.insertarDatos("Usuarios",resUsuario).then(()=>{
+          this.show.continuarTiempo();
+          this.show.showToast("Descarga Completa")
+        })
+      }else{
         this.show.continuarTiempo();
-      })
-    }))      
+        this.show.showToast("No se pudo descargar la informacion de usuarios")
+      }      
+    });      
   }
 
   descargarInsertar(){
       this.show.detenerTiempo("Descargar Facturas");
       this.con.getFacturas().then(resFac=>{
-        this.show.changeContentLoading("Guardando Registros de Facturas")
-        this.sqlMan.insertarDatos("Facturas",resFac).then(()=>{     
-          this.sqlMan.selectData("Facturas","F").then((resSelecFac:Facturas[])=>{
-            let IDFV_min=1000000;
-            for (let i = 0; i < resSelecFac.length; i++) {
-              const element = resSelecFac[i];
-              if(IDFV_min.valueOf()>element.IDFV.valueOf()){
-                IDFV_min = element.IDFV;
+        if(this.con.isOnline) {
+          this.show.changeContentLoading("Guardando Registros de Facturas")
+          this.sqlMan.insertarDatos("Facturas",resFac).then(()=>{     
+            this.sqlMan.selectData("Facturas","F").then((resSelecFac:Facturas[])=>{
+              let IDFV_min=1000000;
+              for (let i = 0; i < resSelecFac.length; i++) {
+                const element = resSelecFac[i];
+                if(IDFV_min.valueOf()>element.IDFV.valueOf()){
+                  IDFV_min = element.IDFV;
+                }
               }
-            }
-            this.show.changeContentLoading("Descargando Cuentas por Cobrar")
-            this.con.getCtaCobrar(IDFV_min).then(resCtaCobrar=>{
-              this.show.changeContentLoading("Guardando Registros de Cuentas por Cobrar")
-              this.sqlMan.insertarDatos("CtasCobrar",resCtaCobrar).then(()=>{              
-                this.show.continuarTiempo();
-                this.goPrincipal();
-              })
-            })          
-          })  
-        });
+              this.show.changeContentLoading("Descargando Cuentas por Cobrar")
+              this.con.getCtaCobrar(IDFV_min).then(resCtaCobrar=>{
+                this.show.changeContentLoading("Guardando Registros de Cuentas por Cobrar")
+                this.sqlMan.insertarDatos("CtasCobrar",resCtaCobrar).then(()=>{              
+                  this.show.continuarTiempo();
+                  this.goPrincipal();
+                })
+              })          
+            })  
+          });
+        }else{
+          this.show.continuarTiempo();
+          this.show.showToast("No se pudo descargar la informacion del sistema")
+        }
       })    
   }
 

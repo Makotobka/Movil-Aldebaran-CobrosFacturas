@@ -47,12 +47,11 @@ export class ListaCobrosPage {
 
   async opciones(){
     let EstadoVF:any = (await this.sqlMan.selectData("Configuracion","C",'C.Tipo = "VerFacturasCero"'))[0]
-    console.log(EstadoVF)
     let Botones:any[]=[];
     if(!EstadoVF.Estado){
       Botones= await [
         {
-          text: 'Activar Vista Facturas 0',
+          text: 'Activar Vista Facturas en 0',
           icon: "radio-button-off",
           handler: () => {
             EstadoVF.Estado = !EstadoVF.Estado;
@@ -66,7 +65,7 @@ export class ListaCobrosPage {
     }else{
       Botones= await [
         {
-          text: 'Desactivar Vista Facturas 0',
+          text: 'Desactivar Vista Facturas en 0',
           icon: "radio-button-on",
           handler: () => {
             EstadoVF.Estado = !EstadoVF.Estado;

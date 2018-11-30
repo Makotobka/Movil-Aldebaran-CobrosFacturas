@@ -5,6 +5,7 @@ import { Chart } from 'chart.js';
 import { colorFondoPaste, colorBordePaste } from '../../app/app.config';
 import { Facturas } from '../../Estructuras/Facturas';
 import { LoginPage } from '../login/login';
+import { ShowProvider } from '../../providers/show/show';
 
 @IonicPage()
 @Component({
@@ -20,7 +21,7 @@ export class PrincipalPage {
   private totalDeuda:number=0;
   private totalDiario:number=0;
 
-  constructor(private modal:ModalController,private sqlMan:SqlManagerProvider ,public navCtrl: NavController, public navParams: NavParams) {
+  constructor(private show:ShowProvider,private modal:ModalController,private sqlMan:SqlManagerProvider ,public navCtrl: NavController, public navParams: NavParams) {
     
   }
 
@@ -80,6 +81,7 @@ export class PrincipalPage {
     for (let i = 0; i < listaCobrado.length; i++) {
       const element:any = listaCobrado[i];
       if(hoy.getFullYear()===element.Fecha.getFullYear() && hoy.getMonth()===element.Fecha.getMonth() && hoy.getDay()===element.Fecha.getDay()){
+        console.log(element);
         this.totalDiario= this.totalDiario.valueOf()+element.Valor.valueOf();
       }
       listaFacturas.push((await this.sqlMan.selectData("Facturas","F","F.IDFV="+element.IDFV))[0])
@@ -134,15 +136,27 @@ export class PrincipalPage {
 
   llenarGraficos(){
     this.canvaCobro.data.datasets[0].data = [this.totalDeuda,this.totalRecaudado];
-    console.log(this.canvaCobro)
     this.canvaCobro.update() 
   }
   
   logout(){    
+    this.show.detenerTiempo("Cambiando estado del usuario activo")
     this.sqlMan.selectData("Usuarios","U",'U.isLogin='+true).then((res:any)=>{      
       res[0].isLogin=false;
-      this.sqlMan.insertarDatos("Usuarios",res[0]);
-      this.navCtrl.setRoot(LoginPage);
+      this.sqlMan.insertarDatos("Usuarios",res[0]).then(()=>{
+        this.show.changeContentLoading("Limpiando Facturas")
+        this.sqlMan.selectData("Facturas","F").then(dataFactura=>{
+          this.sqlMan.eliminarData("Facturas",dataFactura).then(()=>{
+            this.show.changeContentLoading("limpiando Cuentas")
+            this.sqlMan.selectData("CtasCobrar","CTA").then(dataCobros=>{
+              this.sqlMan.eliminarData("CtasCobrar",dataCobros).then(()=>{
+                this.navCtrl.setRoot(LoginPage);
+              })
+            })          
+          })
+        })          
+      });      
+      
     });
   }
 }

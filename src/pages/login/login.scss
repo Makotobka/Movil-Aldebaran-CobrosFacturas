@@ -1,3 +1,33 @@
 page-login {
-
+    .grid-t {
+        margin-top: 20%;
+        .logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border-width: 2px;
+            border-style: solid;
+            //border-color: color($colors, light);
+            //text-align: -webkit-center;
+            .image {
+                display: block;
+                //opacity: 0.10;
+            }
+        }
+    }
+    .grid-b {
+        .col {
+            .button {
+                margin-left: 0;
+                margin-right: 0;
+                .icon {
+                    margin-left: 5px;
+                }
+            }
+        }
+    }
 }

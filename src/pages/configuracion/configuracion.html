@@ -26,9 +26,9 @@
         </ion-item>
         <ion-item>
             <ion-label>Habilitar Puerto</ion-label>
-            <ion-toggle (ionChange)="isDisabled = !isDisabled"></ion-toggle>
+            <ion-toggle (ionChange)="isDisabledTog = !isDisabledTog"></ion-toggle>
         </ion-item>
-        <ion-item *ngIf="isDisabled">
+        <ion-item *ngIf="isDisabledTog">
             <ion-label color="primary" stacked>Puerto: </ion-label>
             <ion-input type="number" placeholder="12345" [(ngModel)]="Puerto"></ion-input>
         </ion-item>
@@ -38,13 +38,17 @@
         </ion-list-header>
         <ion-item>
             <ion-label>Fecha de la ultima sincronizacion</ion-label>
-            <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="fechaSincro.Objeto"></ion-datetime>
+            <ion-datetime text-end displayFormat="DD/MM/YYYY" [(ngModel)]="fechaSincro.Objeto" [disabled]="true"></ion-datetime>
         </ion-item>
         <ion-item>
             <ion-label>Hora de la ultima sincronizacion</ion-label>
-            <ion-datetime displayFormat="HH:mm:ss" [(ngModel)]="fechaSincro.Objeto"></ion-datetime>
+            <ion-datetime text-end displayFormat="HH:mm:ss" [(ngModel)]="fechaSincro.Objeto" [disabled]="true"></ion-datetime>
         </ion-item>
         <ion-item>
+            <ion-label>Colleccion de Datos:</ion-label>
+            <ion-label text-end>{{sqlman.nameBD}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="!isDisabled">
             <ion-label>Sincronizar con el servidor</ion-label>
             <img src="../../assets/icon/sincronizar.png" outline ion-button item-right (click)="subirInformacion()">
         </ion-item>

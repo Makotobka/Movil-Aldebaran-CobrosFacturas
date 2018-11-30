@@ -1,3 +1,5 @@
+$colorTitlo: color($colors, tituloColor);
+$colorFondo: color($colors, primary);
 .gridData {
     padding: 20px !important;
     font-size: small;
@@ -86,38 +88,21 @@
 
 .cardTable {
     .card-header {
-        background-color: color($colors, primary);
+        background-color: $colorFondo;
         padding: 10px;
+        color: $colorTitlo;
         .item {
             background-color: transparent !important;
+            .item-inner {
+                .input-wrapper {
+                    text-align: center;
+                    color: $colorTitlo;
+                }
+            }
         }
     }
     .card-content {
         font-size: small;
         padding: 20px 10px 5px 10px;
-        .grid {
-            .titulos {
-                text-align: start;
-                border-bottom: 2px solid darkgray;
-                .colNumber {
-                    text-align: end;
-                    font-weight: bolder;
-                }
-            }
-            .datos {
-                .col {
-                    //padding-bottom: 0px;
-                    .row {
-                        .col {
-                            text-align: start;
-                        }
-                        .colNumber {
-                            text-align: end;
-                            font-weight: bolder;
-                        }
-                    }
-                }
-            }
-        }
     }
 }

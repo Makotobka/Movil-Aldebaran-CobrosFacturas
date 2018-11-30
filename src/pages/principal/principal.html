@@ -1,7 +1,7 @@
 <ion-header>
 
     <ion-navbar>
-        <ion-title text-center>DASHBOARD</ion-title>
+        <ion-title text-center>{{'DASHBOARD' | uppercase }}</ion-title>
         <ion-buttons left>
             <button ion-button menuToggle="leftMenu">
                 <ion-icon name="menu"></ion-icon>
@@ -19,14 +19,14 @@
     <ion-card class="cardTable">
         <ion-card-header>
             <ion-item align-items-center>
-                Cotabilizacion de Facturas
+                {{'Cotabilizacion de Facturas' | uppercase }}
             </ion-item>
         </ion-card-header>
 
         <ion-card-content>
             <ion-row>
                 <ion-col col-9>
-                    Clientes Visitados:
+                    Clientes Visitados
                 </ion-col>
                 <ion-col col-3 class="TextoNumeros">
                     {{totalPersonas | redondear:'entero'}}
@@ -46,14 +46,14 @@
     <ion-card class="cardTable">
         <ion-card-header>
             <ion-item align-items-center>
-                Recaudacion Diaria
+                {{'Recaudacion Diaria' | uppercase }}
             </ion-item>
         </ion-card-header>
 
         <ion-card-content>
             <ion-row>
                 <ion-col col-9>
-                    Recaudacion Diaria:
+                    Total Recaudado
                 </ion-col>
                 <ion-col col-3 class="TextoNumeros">
                     $ {{totalDiario| redondear}}
