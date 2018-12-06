@@ -1,6 +1,8 @@
-.gridData {    
-    padding: 20px !important;    
-    font-size: small;    
+$colorTitlo: color($colors, tituloColor);
+$colorFondo: color($colors, primary);
+.gridData {
+    padding: 20px !important;
+    font-size: small;
     .cabezera {
         margin-bottom: 5px;
         border-bottom: 2px solid black;
@@ -8,16 +10,14 @@
         .numeroResaltado {
             text-align: end;
         }
-        .col{
+        .col {
             align-self: center;
         }
-
     }
     .cuerpo {
         border-bottom: 2px solid lightgrey;
         margin-bottom: 2px;
-        margin-top: 2px; 
-        
+        margin-top: 2px;
         .numeroResaltado {
             //font-size: medium;
             text-align: end;
@@ -54,5 +54,55 @@
             margin-top: 5px;
             margin-bottom: 0;
         }
+    }
+}
+
+.action-sheets {
+    .ion-md-share {
+        color: #ED4248;
+    }
+    .ion-md-arrow-dropright-circle {
+        color: #508AE4;
+    }
+    .ion-md-heart-outline {
+        color: #31D55F;
+    }
+    .action-sheet-cancel ion-icon,
+    .action-sheet-destructive ion-icon {
+        color: #757575;
+    }
+}
+
+.menu {
+    padding-top: 10%;
+    .item {}
+}
+
+.TextoNumeros {
+    font-weight: bolder;
+    font-family: initial;
+    font-style: normal;
+    font-size: larger;
+    text-align: end;
+}
+
+.cardTable {
+    .card-header {
+        background-color: $colorFondo;
+        padding: 10px;
+        color: $colorTitlo;
+        .item {
+            background-color: transparent !important;
+            .item-inner {
+                .input-wrapper {
+                    text-align: center;
+                    color: $colorTitlo;
+                }
+            }
+        }
+    }
+    .card-content {
+        font-size: small;
+        padding: 20px 10px 5px 10px;
     }
 }

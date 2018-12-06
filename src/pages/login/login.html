@@ -9,22 +9,24 @@
     <ion-navbar>
         <ion-buttons right>
             <button ion-button icon-only (click)="descargarNecesario()">
-              <ion-icon name="refresh-circle"></ion-icon>
-            </button>
+                <ion-icon name="refresh-circle"></ion-icon>
+              </button>
+        </ion-buttons>
+        <ion-buttons left>
             <button ion-button icon-only (click)="goConfiguracion()">
                 <ion-icon name="settings"></ion-icon>
             </button>
         </ion-buttons>
-        <ion-title>Login</ion-title>
+        <ion-title text-center>Login</ion-title>
     </ion-navbar>
 
 </ion-header>
 
-<ion-content class="page-login" padding>
+<ion-content padding>
     <ion-row class="grid-t">
         <ion-col>
             <div class="logo">
-                <img class="image" src="assets/icons_stripe.svg" />
+                <img class="image" src="assets/imgs/login.png" />
             </div>
         </ion-col>
     </ion-row>

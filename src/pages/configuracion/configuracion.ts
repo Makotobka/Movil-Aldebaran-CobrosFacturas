@@ -28,22 +28,31 @@ export class ConfiguracionPage {
   private Config:Configuracion[];
   public IP:any="";
   public Puerto:any="";
+  public isDisabled=false;
+  public isDisabledTog:boolean;
 
-  constructor(private app:App,private show:ShowProvider,private con:ConexionHttpProvider,private sqlman:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
+  constructor(private app:App,private show:ShowProvider,private con:ConexionHttpProvider,public sqlman:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
 
   }
 
   async ionViewDidLoad() {    
-    
-    this.EstadoVF =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "VerFacturasCero"'))[0]
     this.fechaSincro =  (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "fechaUpdate"'))[0]
     this.EstadoMC =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "montoPagoCobrar"'))[0]     
-    this.DirServe =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "conexionStandar"'))[0]     
+    this.DirServe =     (await this.sqlman.selectData("Configuracion","C",'C.Tipo == "conexionStandar"'))[0]   
+    let temp:any[] =           await this.sqlman.selectData("Usuarios","U",'U.isLogin='+true);
+    console.log(temp);
+    if( temp.length === 0 ){
+      this.isDisabled=true;
+    }else{
+      this.isDisabled=false;
+    }
     if(this.fechaSincro.Objeto === undefined || this.fechaSincro.Objeto === null){
-      this.fechaSincro.Objeto = new Date().toISOString();
-    }     
-    this.IP = this.DirServe.Objeto.split("/")[2].split(":")[0]
-    this.Puerto = this.DirServe.Objeto.split("/")[2].split(":")[1]
+      this.fechaSincro.Objeto = {};
+    }         
+    
+    const dirCompleta:string = this.DirServe.Objeto.substring(7,this.DirServe.Objeto.length);
+    this.IP = dirCompleta.split(" ")[0]
+    this.Puerto = dirCompleta.split(" ")[1]
   }
   
   ionViewWillLeave() {
@@ -52,44 +61,59 @@ export class ConfiguracionPage {
   }
 
   subirInformacion(){
+    console.log("Click")
+    /*
     this.show.detenerTiempo("Registrando Informacion");
     this.sqlman.selectData("CtasCobrar","CTA","CTA.saveMovil==true").then((selCtas)=>{
       this.show.changeContentLoading("Guardando Pagos Realizados");
       this.con.setCtsCobrar(selCtas).then((countInsertar)=>{ 
-        console.log("res server ", countInsertar);
-        this.show.changeContentLoading("Actualizando Informacion 1/2")
-        this.sqlman.selectData("Facturas","F").then((selFactura)=>{
-          this.sqlman.eliminarData("CtasCobrar",selCtas).then(()=>{
-            this.sqlman.eliminarData("Facturas",selFactura).then(()=>{
-              this.con.getFacturas().then(resultFactura=>{
-                this.sqlman.insertarDatos("Facturas",resultFactura).then(()=>{
-                  let IDFV_min=1000000;
-                  for (let i = 0; i < resultFactura.length; i++) {
-                    const element = resultFactura[i];
-                    if(IDFV_min.valueOf()>element.IDFV.valueOf())            {
-                      IDFV_min = element.IDFV;
+        if(this.con.isOnline){
+          this.show.changeContentLoading("Actualizando Informacion 1/2")
+          this.sqlman.selectData("Facturas","F").then((selFactura)=>{
+            this.sqlman.eliminarData("CtasCobrar",selCtas).then(()=>{
+              this.sqlman.eliminarData("Facturas",selFactura).then(()=>{
+                this.con.getFacturas().then(resultFactura=>{
+                  this.sqlman.insertarDatos("Facturas",resultFactura).then(()=>{
+                    let IDFV_min=1000000;
+                    for (let i = 0; i < resultFactura.length; i++) {
+                      const element = resultFactura[i];
+                      if(IDFV_min.valueOf()>element.IDFV.valueOf())            {
+                        IDFV_min = element.IDFV;
+                      }
                     }
-                  }
-                  this.show.changeContentLoading("Actualizando Informacion 2/2")
-                  this.con.getCtaCobrar(IDFV_min).then(resultCtaCobrar=>{
-                    this.sqlman.insertarDatos("CtasCobrar",resultCtaCobrar).then(()=>{
-                      this.fechaSincro.Objeto = new Date().toISOString();
-                      this.sqlman.insertarDatos("Configuracion",this.fechaSincro);                   
-                      this.show.continuarTiempo();
-                    });       
-                  });
-                });  
-              });
+                    this.show.changeContentLoading("Actualizando Informacion 2/2")
+                    this.con.getCtaCobrar(IDFV_min).then(resultCtaCobrar=>{
+                      this.sqlman.insertarDatos("CtasCobrar",resultCtaCobrar).then(()=>{
+                        this.fechaSincro.Objeto = new Date().toLocaleString();
+                        this.sqlman.insertarDatos("Configuracion",this.fechaSincro);                   
+                        this.show.continuarTiempo();
+                        this.show.showToast("Sincronizacion completa");
+                      });       
+                    });
+                  });  
+                });
+              })
             })
-          })
-        });
+          });
+        }else{
+          this.show.continuarTiempo();
+          this.show.showToast("No se tiene acceso al servidor, intentelo mas tarde o verifique su direccion");
+        }
+        
       })
     })    
+    */
   }
 
-  guardarDatos(){    
-    this.DirServe.Objeto = "http://"+this.IP+":"+this.Puerto+"/"
+  async guardarDatos(){    
+    /*http://buhocorp.com/api/cobros_aldebaran/pruebas*/
+    if(!this.isDisabledTog){
+      this.DirServe.Objeto = "http://"+this.IP
+    }else{
+      this.DirServe.Objeto = "http://"+this.IP+":"+this.Puerto
+    }    
     this.sqlman.insertarDatos("Configuracion",this.DirServe);
+    this.con.dirServer = await this.DirServe.Objeto;
     this.app.goBack();
   }
 }

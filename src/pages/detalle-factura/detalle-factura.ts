@@ -28,12 +28,12 @@ export class DetalleFacturaPage {
 
   constructor(private show:ShowProvider,private sqlman:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams,public viewCtrl: ViewController) {
     this.Factura = this.navParams.get("Fact");
+    console.log(this.Factura);
   }
 
   async ionViewDidLoad() {
     //this.ListaCobros = await this.sqlmanselec
     this.ListaCobros = await this.sqlman.selectDetalleCobro(this.Factura.IDFV);
-    console.log(this.ListaCobros)
     this.sumaCtsCobrar=0;
     for (let i = 0; i <  this.ListaCobros.length; i++) {
       const element =  this.ListaCobros[i];      
@@ -88,7 +88,7 @@ export class DetalleFacturaPage {
             Estado:true,
             saveMovil:true
           }
-  
+          console.log(this.Factura)
           this.sqlman.insertarDatos("CtasCobrar",registro).then(()=>{
             this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
               this.ionViewDidLoad();
@@ -97,80 +97,19 @@ export class DetalleFacturaPage {
         }
       });
     }else{
-      console.log("Error al registar el monto")
       this.show.showToast("Error al registar el monto")
     }
 
-  }
-
-  async editarRegistro(fila:CtasCobrar){
-    if(fila.saveMovil){
-      let temp = (await this.sqlman.selectData("Configuracion","C",'C.Tipo=="montoPagoCobrar"'))[0];
-      let textoValor=undefined;
-      if(temp.Estado){
-        textoValor="Valor Anterior: $ "+fila.Valor;
-      }
-      this.show.showAlertInputs("EDITAR COBRO",
-        [ 
-          {
-            text:'Cancelar'
-          },   
-          {
-            text:'Eliminar',
-            handler: data=>{
-              this.eliminarCobro(fila);
-            }
-          },{
-            text:'Editar',
-            handler: data=>{            
-              this.editarCobro(fila,data.Valor);
-            }
-          }
-        ],
-        [
-          {
-            name:'Valor',
-            placeholder:'Valor',
-            type: 'number'
-          }
-        ],textoValor);
-    }
-    
   }
 
   eliminarCobro(cta:CtasCobrar){
     if(cta.saveMovil){
       this.Factura.Saldo = this.Factura.Saldo.valueOf()+cta.Valor.valueOf();
       this.sqlman.eliminarData("CtasCobrar",cta).then((res)=>{
-        console.log("Eliminado ",res);
         this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
-          console.log("Editado Completo");
           this.ionViewDidLoad();
         })
       })
-    }
-  }
-
-  editarCobro(cta:CtasCobrar,valor:number){
-    if(cta.saveMovil){
-      if(valor<=this.Factura.Saldo && (this.Factura.Saldo-valor)>=0 && valor>0 ){
-        let res:number = valor.valueOf() - cta.Valor.valueOf();   
-        if(res>=0){
-          this.Factura.Saldo = this.Factura.Saldo.valueOf()-res.valueOf();
-        }else{
-          this.Factura.Saldo = this.Factura.Saldo.valueOf()+(res.valueOf()*-1);
-        }
-        cta.Saldo = this.Factura.Saldo;
-        cta.Valor = valor;
-        this.sqlman.insertarDatos("CtasCobrar",cta).then(()=>{
-          this.sqlman.insertarDatos("Facturas",this.Factura).then(()=>{
-            console.log("Editado Completo");
-            this.ionViewDidLoad();
-          })
-        })
-      }else{
-        this.show.showToast("Error al registar el monto")
-      }
     }
   }
 }

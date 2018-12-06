@@ -1,18 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { SqlManagerProvider } from '../../providers/sql-manager/sql-manager';
-import { CobroFacturaPage } from '../cobro-factura/cobro-factura';
+import { Chart } from 'chart.js';
+import { colorFondoPaste, colorBordePaste } from '../../app/app.config';
+import { Facturas } from '../../Estructuras/Facturas';
 import { LoginPage } from '../login/login';
-import { Usuarios } from '../../Estructuras/Usuarios';
-import { ConfiguracionPage } from '../configuracion/configuracion';
-import { CtasCobrar } from '../../Estructuras/CtasCobrar';
-
-/**
- * Generated class for the PrincipalPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { ShowProvider } from '../../providers/show/show';
 
 @IonicPage()
 @Component({
@@ -21,22 +14,21 @@ import { CtasCobrar } from '../../Estructuras/CtasCobrar';
 })
 export class PrincipalPage {
 
+  @ViewChild('grafCobro') canvaCobro;
+  private totalFacturasPagadas:number=0;
+  private totalPersonas:number=0;
+  private totalRecaudado:number=0;
+  private totalDeuda:number=0;
+  private totalDiario:number=0;
 
-  constructor(private modal:ModalController,private sqlMan:SqlManagerProvider ,public navCtrl: NavController, public navParams: NavParams) {
+  constructor(private show:ShowProvider,private modal:ModalController,private sqlMan:SqlManagerProvider ,public navCtrl: NavController, public navParams: NavParams) {
     
   }
 
-  async ionViewDidLoad() {
-    let listaCobrado = await this.sqlMan.selectData("CtasCobrar","CTA","CTA.saveMovil==true");
-    let listaFacturas=[];
-    for (let i = 0; i < listaCobrado.length; i++) {
-      const element:any = listaCobrado[i];
-      listaFacturas.push((await this.sqlMan.selectData("Facturas","F","F.IDFV="+element.IDFV))[0])
-    }
-    let listaClientes = await this.unirClientes(listaFacturas);
-    console.log(listaCobrado);
-    console.log(listaFacturas);
-    console.log(listaClientes);
+  async ionViewWillEnter(){
+    await this.calcularValores();
+    await this.crearGraficos();
+    await this.llenarGraficos();
   }
 
   private unirClientes(resData:any[]){
@@ -50,6 +42,7 @@ export class PrincipalPage {
           Saldo:element.Saldo,
           Total:element.Total
         })
+        
       }else{
         let exist:boolean=false;
         for (let j = 0; j < temp.length; j++) {
@@ -58,6 +51,7 @@ export class PrincipalPage {
             item.Saldo=item.Saldo.valueOf()+element.Saldo.valueOf();
             item.Total=item.Total.valueOf()+element.Total.valueOf();
             exist=true;
+            
             break;
           }          
         }
@@ -68,10 +62,101 @@ export class PrincipalPage {
             Saldo:element.Saldo,
             Total:element.Total
           })
+          
         }
       }
     }
     return temp;
   }
 
+  private async calcularValores(){
+    this.totalDeuda=0;this.totalRecaudado=0;this.totalDiario=0,this.totalFacturasPagadas=0;;
+    let listaCobrado = await this.sqlMan.selectData("CtasCobrar","CTA","CTA.saveMovil==true");
+    let listaFacturasTotales = await this.sqlMan.selectData("Facturas","F","F.Saldo>0");
+    listaFacturasTotales.forEach((fac:Facturas) => {      
+      this.totalDeuda = this.totalDeuda.valueOf()+fac.Total.valueOf();
+    });
+    let listaFacturas=[];
+    let hoy:Date = new Date();
+    for (let i = 0; i < listaCobrado.length; i++) {
+      const element:any = listaCobrado[i];
+      if(hoy.getFullYear()===element.Fecha.getFullYear() && hoy.getMonth()===element.Fecha.getMonth() && hoy.getDay()===element.Fecha.getDay()){
+        console.log(element);
+        this.totalDiario= this.totalDiario.valueOf()+element.Valor.valueOf();
+      }
+      listaFacturas.push((await this.sqlMan.selectData("Facturas","F","F.IDFV="+element.IDFV))[0])
+      this.totalRecaudado= this.totalRecaudado.valueOf()+element.Valor.valueOf();
+    }
+    let listaClientes = await this.unirClientes(listaFacturas);    
+    this.totalPersonas = listaClientes.length;
+
+    for (let i = 0; i < listaFacturas.length; i++) {
+      const element = listaFacturas[i];
+      if(element.Saldo===0){
+        this.totalFacturasPagadas = this.totalFacturasPagadas.valueOf()+1;    
+      }
+    }
+  }
+
+  crearGraficos(){
+    if(this.canvaCobro.nativeElement!=undefined){
+      this.canvaCobro = new Chart(this.canvaCobro.nativeElement, { 
+        type: 'doughnut',
+        data: {
+            labels: [
+              "Total",
+              "Abonado"
+            ],            
+            datasets: [{      
+                label: 'Sin Caja',
+                data:[
+                  100,
+                  35.26
+                ],
+                backgroundColor: colorFondoPaste,
+                borderColor: colorBordePaste,
+                borderWidth: 3
+            }]           
+        },
+        options: {
+          legend: {
+            position: "bottom",
+            display: true        
+          },
+          animation:{
+            animateRotate:true,
+            animateScale:true
+          }
+        }
+      });
+    }
+    //------------------ UPDATE ------------------------------
+    this.canvaCobro.update()    
+  }
+
+  llenarGraficos(){
+    this.canvaCobro.data.datasets[0].data = [this.totalDeuda,this.totalRecaudado];
+    this.canvaCobro.update() 
+  }
+  
+  logout(){    
+    this.show.detenerTiempo("Cambiando estado del usuario activo")
+    this.sqlMan.selectData("Usuarios","U",'U.isLogin='+true).then((res:any)=>{      
+      res[0].isLogin=false;
+      this.sqlMan.insertarDatos("Usuarios",res[0]).then(()=>{
+        this.show.changeContentLoading("Limpiando Facturas")
+        this.sqlMan.selectData("Facturas","F").then(dataFactura=>{
+          this.sqlMan.eliminarData("Facturas",dataFactura).then(()=>{
+            this.show.changeContentLoading("limpiando Cuentas")
+            this.sqlMan.selectData("CtasCobrar","CTA").then(dataCobros=>{
+              this.sqlMan.eliminarData("CtasCobrar",dataCobros).then(()=>{
+                this.navCtrl.setRoot(LoginPage);
+              })
+            })          
+          })
+        })          
+      });      
+      
+    });
+  }
 }

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Http, RequestOptions, ResponseContentType, Headers, RequestMethod } from '@angular/http';
 import { uriAPI } from './rutas';
+import { splitDepsDsl } from '@angular/core/src/view/util';
 
 @Injectable()
 export class ConexionHttpProvider {
 
   private opciones:RequestOptions;
-  private dirServer:string="";
+  public dirServer:string="";
   public metodo:string;               //-- Metodo de solicitud realizado
   public codigo:number;               //-- codigo HTTP estandar.
   public mensaje:string;              //-- Mensaje correspondiente al codigo HTPP .  
@@ -16,13 +17,10 @@ export class ConexionHttpProvider {
     
   }
 
-  cambiarDirServer(URI:string){    
-    this.dirServer = URI;
-  }
-
   llenarDatosRespons(respuesta:any){
+    
     this.mensaje = respuesta.statusText;
-    this.codigo = respuesta.status;    
+    this.codigo = respuesta.status;  
     if(!respuesta.ok){
       if(this.codigo==0){
         console.log("Sin señal")
@@ -35,9 +33,11 @@ export class ConexionHttpProvider {
 
   async getFacturas(){
     try{      
-        let respuesta = await this.http.get(this.dirServer+uriAPI.getFacturasCredito).toPromise();       
-        this.isOnline=true;
-        return JSON.parse(await this.llenarDatosRespons(respuesta));
+      const ipser = this.dirServer+uriAPI.getFacturasCredito
+      const respuesta = await this.http.get(ipser).toPromise();       
+      this.isOnline=true;
+      
+      return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{
       console.log("erro http")
       this.isOnline=false;
@@ -47,9 +47,8 @@ export class ConexionHttpProvider {
 
   async getCtaCobrar(IDFV){
     try{      
-      let parametro = IDFV;
-      console.log("cta cobrar", this.dirServer+uriAPI.getCtsPagarFactura+parametro)
-      let respuesta = await this.http.get(this.dirServer+uriAPI.getCtsPagarFactura+parametro).toPromise();
+      const parametro = IDFV;
+      const respuesta = await this.http.get(this.dirServer+uriAPI.getCtsPagarFactura+parametro).toPromise();
       this.isOnline=true;
       return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{
@@ -61,8 +60,7 @@ export class ConexionHttpProvider {
 
   async getUsuarios(){
     try{            
-      let respuesta = await this.http.get(this.dirServer+uriAPI.getusuarios).toPromise();
-      console.log("usuarios", this.dirServer+uriAPI.getusuarios)
+      const respuesta = await this.http.get(this.dirServer+uriAPI.getusuarios).toPromise();
       this.isOnline=true;
       return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{
@@ -73,8 +71,9 @@ export class ConexionHttpProvider {
   }
 
   async setCtsCobrar(data:any){
-    try{                 
-      let respuesta = await this.http.post(this.dirServer+uriAPI.setCtasAll,data).toPromise();
+    try{           
+      const ipser = this.dirServer+uriAPI.setCtasAll 
+      const respuesta = await this.http.post(ipser,data).toPromise();
       this.isOnline=true;
       return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{

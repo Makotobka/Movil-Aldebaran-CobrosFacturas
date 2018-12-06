@@ -30,21 +30,15 @@ export class LoginPage {
   errorMessage = '';
 
   constructor(private modal:ModalController,private seguridad:SeguridadProvider,private show:ShowProvider,private con:ConexionHttpProvider ,private sqlMan:SqlManagerProvider,public navCtrl: NavController, public navParams: NavParams) {
-  }
-
-  ionViewDidLoad() {    
-    this.sqlMan.abrirConexion().then(async (res)=>{      
+    this.sqlMan.abrirConexion().then(async (res)=>{          
       let counUser = await this.sqlMan.selectData("Usuarios","U");
       let urlServer:any = (await this.sqlMan.selectData("Configuracion","C",'C.Tipo=="conexionStandar"'))[0]
       if(urlServer === undefined){
         await this.valorDefecto();
         urlServer = await (await this.sqlMan.selectData("Configuracion","C",'C.Tipo=="conexionStandar"'))        
-        console.log("=>")
-        this.ionViewDidLoad();
       }else{
-        await this.con.cambiarDirServer(urlServer.Objeto);
-      }
-      console.log(urlServer)      
+        this.con.dirServer = await urlServer.Objeto;
+      }      
       if(counUser.length === 0){
         if(urlServer !== undefined){
           this.descargarNecesario();
@@ -60,38 +54,49 @@ export class LoginPage {
   }
 
   descargarNecesario(){
-    this.show.detenerTiempo("Descargar Usuarios");
-    //this.con.getUsuarios().then((resUsuario=>{
-      this.sqlMan.insertarDatos("Usuarios",getUsuarios).then(()=>{
+    this.show.detenerTiempo("Descargando Usuarios");
+    this.con.getUsuarios().then((resUsuario)=>{   
+      if(this.con.isOnline) {
+        this.sqlMan.insertarDatos("Usuarios",resUsuario).then(()=>{
+          this.show.continuarTiempo();
+          this.show.showToast("Descarga Completa")
+        })
+      }else{
         this.show.continuarTiempo();
-      })
-    //}))      
+        this.show.showToast("No se pudo descargar la informacion de usuarios")
+      }      
+    });      
   }
 
   descargarInsertar(){
       this.show.detenerTiempo("Descargar Facturas");
-      //this.con.getFacturas().then(resFac=>{
-        this.show.changeContentLoading("Guardando Registros de Facturas")
-        this.sqlMan.insertarDatos("Facturas",getFacturaCredito).then(()=>{     
-          this.sqlMan.selectData("Facturas","F").then((resSelecFac:Facturas[])=>{
-            let IDFV_min=1000000;
-            for (let i = 0; i < resSelecFac.length; i++) {
-              const element = resSelecFac[i];
-              if(IDFV_min.valueOf()>element.IDFV.valueOf()){
-                IDFV_min = element.IDFV;
+      this.con.getFacturas().then(resFac=>{
+        if(this.con.isOnline) {
+          this.show.changeContentLoading("Guardando Registros de Facturas")
+          this.sqlMan.insertarDatos("Facturas",resFac).then(()=>{     
+            this.sqlMan.selectData("Facturas","F").then((resSelecFac:Facturas[])=>{
+              let IDFV_min=1000000;
+              for (let i = 0; i < resSelecFac.length; i++) {
+                const element = resSelecFac[i];
+                if(IDFV_min.valueOf()>element.IDFV.valueOf()){
+                  IDFV_min = element.IDFV;
+                }
               }
-            }
-            this.show.changeContentLoading("Descargando Cuentas por Cobrar")
-            //this.con.getCtaCobrar(IDFV_min).then(resCtaCobrar=>{
-              this.show.changeContentLoading("Guardando Registros de Cuentas por Cobrar")
-              this.sqlMan.insertarDatos("CtasCobrar",getCtsCobrar).then(()=>{              
-                this.show.continuarTiempo();
-                this.goPrincipal();
-              })
-            //})          
-          })  
-        });
-      //})    
+              this.show.changeContentLoading("Descargando Cuentas por Cobrar")
+              this.con.getCtaCobrar(IDFV_min).then(resCtaCobrar=>{
+                this.show.changeContentLoading("Guardando Registros de Cuentas por Cobrar")
+                this.sqlMan.insertarDatos("CtasCobrar",resCtaCobrar).then(()=>{              
+                  this.show.continuarTiempo();
+                  this.goPrincipal();
+                })
+              })          
+            })  
+          });
+        }else{
+          this.show.continuarTiempo();
+          this.show.showToast("No se pudo descargar la informacion del sistema")
+        }
+      })    
   }
 
   goPrincipal(){    
@@ -102,8 +107,6 @@ export class LoginPage {
     let ventana = this.modal.create(ConfiguracionPage);
     ventana.present();
     ventana.onDidDismiss(()=>{
-      //this.FraseFiltro=undefined;
-      this.ionViewDidLoad();
     })
   }
 
@@ -155,7 +158,7 @@ export class LoginPage {
           Tipo:"conexionStandar",
           Estado:true,
           Valor:0,
-          Objeto:"http://localhosts:50878/"
+          Objeto:"http://localhost:50878/"
         }
       ]
       );      

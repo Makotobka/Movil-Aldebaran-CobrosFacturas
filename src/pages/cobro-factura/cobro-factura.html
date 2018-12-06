@@ -20,7 +20,47 @@
 
 <ion-content>
 
-    <h3 text-center> {{dataCliente.CLIENTE}} </h3>
+    <ion-card class="cardTable">
+        <ion-card-header text-center>
+            {{dataCliente.CLIENTE}}
+        </ion-card-header>
+        <ion-card-content>
+            <ion-row>
+                <ion-col col-auto>
+                    Categoria:
+                </ion-col>
+                <ion-col>
+                    {{datalistView.CATEGORIACLIENTE}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col col-auto>
+                    Telefono:
+                </ion-col>
+                <ion-col>
+                    {{datalistView.Telefono}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col col-auto>
+                    Direccion:
+                </ion-col>
+                <ion-col>
+                    {{datalistView.Direccion}}
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col col-auto>
+                    Vendedor:
+                </ion-col>
+                <ion-col>
+                    {{datalistView.USUARIONOMBRE}}
+                </ion-col>
+            </ion-row>
+        </ion-card-content>
+    </ion-card>
+
+
 
     <ion-grid class="gridData">
         <ion-row class="cabezera">
@@ -37,20 +77,26 @@
                 SALDO
             </ion-col>
         </ion-row>
-        <ion-row class="cuerpo" *ngFor="let item of listaFactura" (click)="goDetalleCobro(item)">
+        <ion-row class="cuerpo" *ngFor="let item of listaFiltro" (click)="goDetalleCobro(item)">
             <ion-col col-3>
                 {{item.Fecha | date: 'mediumDate'}}
             </ion-col>
             <ion-col col-3 style="font-size: xx-small;">
                 {{item.Numero}}
             </ion-col>
-            <ion-col class="numeroResaltado" col-3>
+            <ion-col class="TextoNumeros" col-3>
                 $ {{item.Total | redondear}}
             </ion-col>
-            <ion-col class="numeroResaltado" col-3>
+            <ion-col class="TextoNumeros" col-3 [ngClass]="{SaldoMaximo: item.Saldo == item.Total, SaldoNormal: (item.Saldo > 0 && item.Saldo < item.Total), Saldo0:item.Saldo == 0}">
                 $ {{item.Saldo | redondear}}
             </ion-col>
         </ion-row>
     </ion-grid>
 
 </ion-content>
+
+<ion-footer>
+    <ion-toolbar color="primary">
+        <ion-searchbar [(ngModel)]="FraseFiltro" (ionInput)="onInput($event)"></ion-searchbar>
+    </ion-toolbar>
+</ion-footer>

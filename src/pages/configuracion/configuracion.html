@@ -8,11 +8,6 @@
 
     <ion-navbar>
         <ion-title text-center>CONFIGURACIONES</ion-title>
-        <ion-buttons left>
-            <button ion-button icon-only navPop>
-                <ion-icon name="arrow-back"></ion-icon>
-            </button>
-        </ion-buttons>
     </ion-navbar>
 
 </ion-header>
@@ -27,9 +22,13 @@
         </ion-list-header>
         <ion-item>
             <ion-label color="primary" stacked>Direccion IP: </ion-label>
-            <ion-input placeholder="192.168.0.2" [(ngModel)]="IP"></ion-input>
+            <ion-input placeholder="192.168.0.2 o www.pagina.com" [(ngModel)]="IP"></ion-input>
         </ion-item>
         <ion-item>
+            <ion-label>Habilitar Puerto</ion-label>
+            <ion-toggle (ionChange)="isDisabledTog = !isDisabledTog"></ion-toggle>
+        </ion-item>
+        <ion-item *ngIf="isDisabledTog">
             <ion-label color="primary" stacked>Puerto: </ion-label>
             <ion-input type="number" placeholder="12345" [(ngModel)]="Puerto"></ion-input>
         </ion-item>
@@ -39,13 +38,17 @@
         </ion-list-header>
         <ion-item>
             <ion-label>Fecha de la ultima sincronizacion</ion-label>
-            <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="fechaSincro.Objeto"></ion-datetime>
+            <ion-datetime text-end displayFormat="DD/MM/YYYY" [(ngModel)]="fechaSincro.Objeto" [disabled]="true"></ion-datetime>
         </ion-item>
         <ion-item>
             <ion-label>Hora de la ultima sincronizacion</ion-label>
-            <ion-datetime displayFormat="HH:mm:ss" [(ngModel)]="fechaSincro.Objeto"></ion-datetime>
+            <ion-datetime text-end displayFormat="HH:mm:ss" [(ngModel)]="fechaSincro.Objeto" [disabled]="true"></ion-datetime>
         </ion-item>
         <ion-item>
+            <ion-label>Colleccion de Datos:</ion-label>
+            <ion-label text-end>{{sqlman.nameBD}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="!isDisabled">
             <ion-label>Sincronizar con el servidor</ion-label>
             <img src="../../assets/icon/sincronizar.png" outline ion-button item-right (click)="subirInformacion()">
         </ion-item>
@@ -53,10 +56,7 @@
         <ion-list-header>
             Personalizacion
         </ion-list-header>
-        <ion-item>
-            <ion-label>Vista de Facturas Pagadas</ion-label>
-            <ion-toggle [(ngModel)]="EstadoVF.Estado"></ion-toggle>
-        </ion-item>
+
         <ion-item>
             <ion-label>Indicar Montos Anteriores de Pago</ion-label>
             <ion-toggle [(ngModel)]="EstadoMC.Estado"></ion-toggle>
