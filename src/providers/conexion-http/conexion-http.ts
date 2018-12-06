@@ -48,6 +48,7 @@ export class ConexionHttpProvider {
   async getCtaCobrar(IDFV){
     try{      
       let parametro = IDFV;
+      console.log("cta cobrar", this.dirServer+uriAPI.getCtsPagarFactura+parametro)
       let respuesta = await this.http.get(this.dirServer+uriAPI.getCtsPagarFactura+parametro).toPromise();
       this.isOnline=true;
       return JSON.parse(await this.llenarDatosRespons(respuesta));
@@ -61,6 +62,7 @@ export class ConexionHttpProvider {
   async getUsuarios(){
     try{            
       let respuesta = await this.http.get(this.dirServer+uriAPI.getusuarios).toPromise();
+      console.log("usuarios", this.dirServer+uriAPI.getusuarios)
       this.isOnline=true;
       return JSON.parse(await this.llenarDatosRespons(respuesta));
     }catch{

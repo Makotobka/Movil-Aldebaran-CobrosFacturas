@@ -1,3 +1,4 @@
+import { getFacturaCredito, getCtsCobrar, getUsuarios } from './../../app/dataPrueba';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { SqlManagerProvider } from '../../providers/sql-manager/sql-manager';
@@ -60,18 +61,18 @@ export class LoginPage {
 
   descargarNecesario(){
     this.show.detenerTiempo("Descargar Usuarios");
-    this.con.getUsuarios().then((resUsuario=>{
-      this.sqlMan.insertarDatos("Usuarios",resUsuario).then(()=>{
+    //this.con.getUsuarios().then((resUsuario=>{
+      this.sqlMan.insertarDatos("Usuarios",getUsuarios).then(()=>{
         this.show.continuarTiempo();
       })
-    }))      
+    //}))      
   }
 
   descargarInsertar(){
       this.show.detenerTiempo("Descargar Facturas");
-      this.con.getFacturas().then(resFac=>{
+      //this.con.getFacturas().then(resFac=>{
         this.show.changeContentLoading("Guardando Registros de Facturas")
-        this.sqlMan.insertarDatos("Facturas",resFac).then(()=>{     
+        this.sqlMan.insertarDatos("Facturas",getFacturaCredito).then(()=>{     
           this.sqlMan.selectData("Facturas","F").then((resSelecFac:Facturas[])=>{
             let IDFV_min=1000000;
             for (let i = 0; i < resSelecFac.length; i++) {
@@ -81,16 +82,16 @@ export class LoginPage {
               }
             }
             this.show.changeContentLoading("Descargando Cuentas por Cobrar")
-            this.con.getCtaCobrar(IDFV_min).then(resCtaCobrar=>{
+            //this.con.getCtaCobrar(IDFV_min).then(resCtaCobrar=>{
               this.show.changeContentLoading("Guardando Registros de Cuentas por Cobrar")
-              this.sqlMan.insertarDatos("CtasCobrar",resCtaCobrar).then(()=>{              
+              this.sqlMan.insertarDatos("CtasCobrar",getCtsCobrar).then(()=>{              
                 this.show.continuarTiempo();
                 this.goPrincipal();
               })
-            })          
+            //})          
           })  
         });
-      })    
+      //})    
   }
 
   goPrincipal(){    
